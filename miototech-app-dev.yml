@@ -1,9 +1,4 @@
-server:
-  port: 9097
-
 spring:
-    application:
-      name: miototech-miotoapp-work
     datasource:
         name: test
         url: jdbc:mysql://47.94.100.10:3306/miotoapp?characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull
