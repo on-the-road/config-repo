@@ -38,14 +38,14 @@ pagehelper:
     params: count=countSql
 
 # 注册中心地址
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://10.2.3.61:8761/eureka/    #指定服务注册中心地址
-    registry-fetch-interval-seconds: 30           #服务提供者缓存清单刷新时间，默认为30秒
-  instance:
-    preferIpAddress: true                           #使用IP形式定义注册中心地址
-    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+# eureka:
+#   client:
+#     serviceUrl:
+#       defaultZone: http://10.2.3.61:8761/eureka/    #指定服务注册中心地址
+#     registry-fetch-interval-seconds: 30           #服务提供者缓存清单刷新时间，默认为30秒
+#   instance:
+#     preferIpAddress: true                           #使用IP形式定义注册中心地址
+#     instance-id: ${spring.cloud.client.ipAddress}:${server.port}
 
 #  Swagger配置
 #swagger:
