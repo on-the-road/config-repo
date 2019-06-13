@@ -1,0 +1,80 @@
+
+1. vim --- 命令知多少，亲测好使
+   命令模式下：
+   shift + g (G) -->光标跳到末行
+   gg  --->光标跳到首行
+   u ---> 撤销
+   x (shift + x) ---> 删除光标后/前的字符...
+   y  --->复制当前行
+   p  --->粘贴
+   dd --->删除当前行
+   set nu 或 set number --->显示行号
+   set nonu 或是 set nonumber --->隐藏行号
+   yyp -- 复制当前行到下一行
+   u -- 撤销上一步操作
+   xp -- 交换前后两个字符的位置
+   ddp -- 上下两行的位置交换
+
+2.Atom --- 一些使用心得
+	快捷键类：
+		ctrl + \   -- 隐藏/显示左侧菜单树
+		ctrl + shift + I  -- 调出开发者工具
+		最大的特点：慢，硬伤
+
+3.idea - 调试快捷键
+	F9 -- 跳到下一个断点
+	F8 -- 下一步
+	F7 -- 进入代码块(进入方法内部)
+	shift + F8 --调出代码块
+
+	操作快捷键：
+		ctrl + H -- 查看类的继承层次
+		alt + F7 -- 查看变量或方法的调用
+		ctrl + shift + alt + T -- 重构
+		shift + F6 -- 直接改名
+		alt + v  -- 进入各种模式，比如全屏模式
+		ctrl + w --- 选中一个完整的单词
+		alt + j -- 与 ctrl + w 配合使用
+		ctrl + alt + L  代码格式化
+		ctrl + E 最近浏览的文件列表
+		ctrl + shift + Enter 快速补全行尾的分号
+		ctrl + shift + V 访问历史粘贴板
+		ctrl + alt +B 查看接口的实现类
+
+	shift + F6   :直接改名  （选中一个变量：全选）
+	用F2/ Shift+F2移动到有错误的代码
+	ctrl + alt +h :  方法调用链
+
+	重构快捷键：ctrl + shift + alt + t
+	大小写切换：ctrl + shift + u
+	全局查找：  ctrl + shift + f
+	全局查找替换：ctrl + shift + r
+
+
+4.maven___常用命令
+	mvn compile --- 编译项目
+	mvn package --- 打包
+	mvn test --- 执行测试
+	mvn clean --- 清理（清除target目录下的内容）
+	mvn clean install --- 一个组合命令，构建项目并打包
+	mvn package -Dmaven.test.skip=ture  --- 打包时跳过测试
+	mvn install 会将项目生成的构件安装到本地Maven仓库
+	mvn deploy 用来将项目生成的构件分发到远程Maven仓库
+
+
+5.sublime__相关快捷键
+	分屏 -- alt + shift + 2
+	取消分屏 -- alt + shift + 1
+
+6.浏览器操作的一些快捷键
+	标签页之间的切换 -- ctrl + tab // ctrl + shift + tab
+	选中地址栏 -- F6
+	关闭当前标签页 -- ctrl + w
+
+7. vs-code快捷键
+	上下两行代码交换位置  alt + 上箭头、下箭头键
+	Ctrl + Home  跳转到页头
+	Ctrl + End   跳转到页尾
+
+
+	

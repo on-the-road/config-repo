@@ -1,0 +1,36 @@
+	mongodb -- 相关
+1. 数据格式：类似于json的bson格式,
+	分布式文件存储数据库，最像关系型数据库的NOSQL数据库
+2. 内核使用 c++语言开发
+3. window安装，注意两个命令  mongo.exe 和 mongod.exe\
+4. 默认监听端口 -- 27017 不支持事务，但是 对文档的增删改都是原子性操作
+	mongob 的文档和集合
+	document --- row 一条记录
+	单个文档的存储空间不能超过16MB
+	collection --- table 一个表
+	集合是模式自由的
+	
+5. mongod --启动数据库     mongo -- 连接数据库
+	show dbs
+	show collections
+	use dbname
+	male -- 雄性
+	female -- 雌性
+	db.user.save()
+	db.user.find()
+	//这是更新数据
+	db.user.update({_id:""},{$set:{name:'123'}})
+	//删除数据
+	db.user.remove({....})
+	//删除集合
+	db.user.drop();  --- user这个集合（表）会被删掉
+
+6.数据引擎：默认 mmapv1 3.0以后支持 wiredTiger （storageEngin）
+
+7. mongod  --dbpath  --数据存储目录
+	   --fork  -- 后台运行
+	   --logpath -- 日志存放目录
+	   --port --运行端口 (默认27017)
+	   --smallfiles -- 占用更小的磁盘空间启动
+
+

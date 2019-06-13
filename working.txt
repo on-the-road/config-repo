@@ -1,0 +1,224 @@
+echo -n | openssl s_client -connect smtp.qq.com:465 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ~/.certs/qq.crt
+certutil -A -n "GeoTrust SSL CA" -t "C,," -d ~/.certs -i ~/.certs/qq.crt
+certutil -A -n "GeoTrust Global CA" -t "C,," -d ~/.certs -i ~/.certs/qq.crt
+certutil -L -d /home/wwei/.certs
+ 
+set from=mutian_05@163.com
+set smtp=smtp.163.com
+set smtp-auth-user=mutian_05@163.com
+set smtp-auth-password=198692ww
+set smtp-auth=login
+
+mvn clean package -Dmaven.test.skip=true
+
+peer -1 
+	spring.application.name=spring-cloud-eureka
+
+server.port=9091
+eureka.instance.hostname=localhost
+
+security.user.name=mioto
+security.user.password=mioto2018
+
+eureka.client.serviceUrl.defaultZone=http://localhost:9199/eureka/
+
+peer -2
+	spring.application.name=spring-cloud-eureka
+
+server.port=9199
+eureka.instance.hostname=localhost
+
+security.user.name=mioto
+security.user.password=mioto2018
+
+eureka.client.serviceUrl.defaultZone=http://localhost:9091/eureka/
+
+
+
+/usr/java8/jdk1.8.0_171
+
+export JAVA_HOME=/usr/java8/jdk1.8.0_171
+export JRE_HOME=/usr/java8/jdk1.8.0_171/jre
+
+
+miofun -- 项目
+	1. ms 
+
+		  服务 	   端口
+	2. ms-eureka  -- 19200   +2
+	   ms-gateway -- 19300   +2
+	   ms-account -- 19400   +2
+	   	redis     -- 8083
+	   	nexus     -- 8081
+	   ms-work    -- 19500   +2
+
+k8s - docker -- 的东西
+miofun-app 扫码登录流程---
+
+1. web端 --request--> 后端 
+   response--
+
+   uuid -> expire:3min
+   obj->{
+      "qrkey": "uuid",    //唯一标识码
+      "isScan": false,    //被扫过?
+      "isTimeOut": false, //过期?
+      "userId": "",       //用户ID
+      "token": "",        //token
+      "createTime": 12345
+   }
+
+   后台->key:qrkey,value:obj 存储
+
+   return obj;
+
+2. web端用obj生成二维码，
+   miofun用户(登录状态)使用miofun-app扫一扫功能
+   扫码成功 --> app页面跳转(uuid与userId绑定)
+   点击确认登录，带着uuid与userId请求后台
+
+3. 后台 --action
+   接受app确认登录请求,验证uuid有效性
+   有效 --> 改变uuid状态
+   			用userId生成token
+   			obj->{
+			      "qrkey": "uuid",    //唯一标识码
+			      "isScan": true,    //被扫过?
+			      "isTimeOut": false, //过期?
+			      "userId": "sdfsdf",       //用户ID
+			      "token": "sdfsdfsfsf",        //token
+			      "createTime": 12345
+			     }
+	前端轮询获取obj
+	后端推送obj
+	delete -> key:uuid 		 
+
+nohup java -jar zipkin.jar --zipkin.storage.type=mysql --zipkin.storage.mysql.host=localhost --zipkin.storage.mysql.port=3306 --zipkin.storage.mysql.username=root --zipkin.storage.mysql.password=mioto2018 --zipkin.storage.mysql.db=sleuth-zipkin &
+
+ln -s /home/wwei/node/nodejs/bin/node /usr/local/bin/node
+ln -s /home/wwei/node/nodejs/bin/npm /usr/local/bin/npm
+--------------------- 
+
+
+NODE_HOME=/home/wwei/node/nodejs
+export PATH=$NODE_HOME/bin:$PATH
+
+
+sonar.projectKey=songer
+sonar.projectName=molto-ms-pipline-account
+sonar.projectVersion=1.0
+sonar.sourceEncoding=UTF-8
+sonar.language=java
+sonar.sources=src/main/java
+sonar.scm.disable=true
+sonar.java.binaries=target/classes
+
+
+2019-01-03 -- 像素PIX相关记录
+
+pixel-registry -- port: 30001
+pixel-gateway -- port: 30002
+pixel-design -- port: 30003
+pixel-material -- port: 30004
+pixel-account -- port: 30008
+pixel-recommend -- port: 30006
+pixel-common -- port: 30007
+pixel-storage -- port: 30005
+pixel-video -- port: 30010
+pixel-oms -- port: 30011
+
+
+http://test.miototech.com/pixel-ai
+
+
+mvn clean package -Dmaven.test.skip=true
+
+https://e.coding.net/miototech/pixel_fancy.git
+
+sonar.projectKey=design
+sonar.projectName=pixel-design
+sonar.projectVersion=1.0
+sonar.sourceEncoding=UTF-8
+sonar.language=java
+sonar.sources=src/main/java
+sonar.scm.disable=true
+sonar.java.binaries=target/classes
+
+target/*.jar
+target/
+/pixel-jar/design
+sh /home/wwei/pixel-shell/design.sh
+
+telnet localhost 30033
+
+molto-auto-design -wechat
+
+
+aop实现用户日志功能
+
+int number = (int) ((   ((long) i * 8 + j) - (1l << 31) )); 
+
+
+第一个，xshell的隧道功能。其中一个使用场景是这样的，测试服务器上跑了一个服务，端口是12580，但是测试服务器上的12580端口没有开放....，此时我想在本地用postman测试一下这个服务，怎么办？自己到测试服务器上把12580打开？（好像没有root权限哦....），如果是阿里云服务器，需要到网站控制台上用管理员账户来放开12580.....
+
+其实有更好的办法，嘿嘿，不求人，xshell的隧道功能:
+
+效果就不贴了，很简单，很实用，没事可以自己试试.....
+
+
+
+第二个，通过xshell从服务器上下载文件或是上传文件到服务器。
+
+首先服务器上需要安装命令，yum -y install  lrzsz(需要sudo权限)
+
+[wwei@iz2ze7i2tn9ky8lnd10i9xz ~]$ rpm -qa lrzsz
+
+lrzsz-0.12.20-36.el7.x86_64
+
+我的已经安装...
+
+安装完成之后其实是两个命令： rz  -- 上传    sz -- 下载
+
+[wwei@iz2ze7i2tn9ky8lnd10i9xz ~]$ rz 
+
+
+是不是很熟悉的画面....直接选择你要上传的文件就OK了...
+
+
+[wwei@iz2ze7i2tn9ky8lnd10i9xz ~]$ ls
+
+as.sh  helloworld.txt  logs  __MACOSX  OtherTestCase.class  pixel-ai-dev  testDockerfile
+
+[wwei@iz2ze7i2tn9ky8lnd10i9xz ~]$ sz helloworld.txt
+
+直接选择一个本地目录，确定，文件从服务器发送到了本地....
+
+
+
+流年腐蚀了青春
+生活偷走了年轮
+
+
+二叉树是每个结点最多有两个子树的树结构。
+
+一棵深度为k(层数)，且有2^k-1【2的(k-1)次方】个节点的二叉树，称为满二叉树，即除最后一层外，其余层都是满的。
+
+在一棵二叉树中，除最后一层外，若其余层都是满的，并且最后一层或者是满的，或者是在右边缺少连续若干节点，则此二叉树为完全二叉树。
+
+满二叉树一定是完全二叉树，完全二叉树不一定是满二叉树。
+
+在本来努力的年龄却找不到努力的方向
+风骚走位完美避开了最高效的解决问题方式
+
+什么是页，什么是页缓存？
+
+
+1-特写 2-近景 3-中景 4-远景 5-全景
+
+
+
+<div class="cool-animation-boundary" style="width:300px;" id="254"><div class="cool-sticky"><div class="cool-align"><div class="cool-top-line lineup" style="background-color: red;" id="254-2"></div><div class="cool-right-line lineup-down" style="background-color: red;" id="254-3"></div><div class="cool-text-animation"><div class="cool-text fadeIn" style="justify-content: flex-end;font-size: 36px;color: red;font-family:Arial;" id="254-4">边界</div><div class="cool-text-mark scale" style="background: #2bb1f9;" id="254-5"></div></div><div class="cool-bottom-line lineup-reverse" style="background-color: red;" id="254-6">
+</div><div class="cool-left-line lineup-up" style="background-color: red;" id="254-7"></div></div></div></div>
+
+
+newtt -- 1.前端需要传递   projectId  userId 尺寸信息

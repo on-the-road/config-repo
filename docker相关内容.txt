@@ -1,0 +1,484 @@
+docker --- 相关内容
+1.  Docker -- 总体概括
+	docker就是类似的理念。现在都流行云计算了，云计算就好比大货轮。docker就是集装箱。
+	首先：Docker并非虚拟机(VM),两者不是同一回事。
+
+	SaaS: 基本概念 -- Software-as-a-Service 软件即服务
+		它是一种通过Internet提供软件的模式，厂商将应用软件统一部署在自己的服务器上，
+		客户可以根据自己实际需求，通过互联网向厂商定购所需的应用软件服务，按定购的服务多少和时间长短向厂商支付费用，
+		并通过互联网获得厂商提供的服务。用户不用再购买软件，而改用向提供商租用基于Web的软件，
+		来管理企业经营活动，且无需对软件进行维护，服务提供商会全权管理和维护软件，
+		软件厂商在向客户提供互联网应用的同时，也提供软件的离线操作和本地数据存储，让用户随时随地都可以使用其定购的软件和服务
+
+	PaaS: 基本概念 -- Platform-as-a-Service 平台即服务
+		它是把服务器平台作为一种服务提供的商业模式，通过网络进行程序提供的服务是SaaS
+
+	一些专有名词的缩写:
+	AWS -- Amazon Web Services (亚马逊网络服务)
+	DevOps -- development and operations
+	云计算 -- 说到底就两个字，运维
+	Docker的出现是为了解决Paas的问题，运行环境与项目强关联。
+	Iaas -- Infrastructure as a Service 基础设施即服务（存储，数据库等）
+
+	云计算领域的技术分为：虚拟化技术和资源管理，正对应docker和docker-compose
+	docker-compose:负责将多个docker服务整合起来，对外提供一致服务。
+
+	docker相关命令与操作:
+
+	Linux Containers -- LXC  linux容器技术
+	不是模拟完整的操作系统，而是对进程进行隔离，所以说容器是进程级别的。
+
+	docker是go语言实现的云计算开源项目
+	"build,ship and run any app,anywhere"  --  一次封装，到处运行
+
+	Docker 使用客户端-服务器 (C/S) 架构模式,Docker 客户端会与 Docker 守护进程进行通信
+	Docker是CS架构，主要有两个概念：
+
+		Docker daemon: 运行在宿主机上，Docker守护进程，
+					   用户通过Docker client(Docker命令)与Docker daemon交互
+
+		Docker client: Docker 命令行工具，是用户使用Docker的主要方式，
+					   Docker client与Docker daemon通信并将结果返回给用户，Docker client也可以通过socket或者RESTful api访问远程的Docker daemon
+	    所以Docker本身是一个服务，需要先运行起来，在执行相关的操作.
+	    通过 systemctl status docker查看docker daemon是否运行状态
+
+	docker核心概念：
+		docker镜像
+			read-only,包含有需要运行的文件，镜像是用来创建container的，一个镜像可以运行多个
+			container,镜像可以用dockerfile来创建，也可以从docker hub上拉取。
+		docker容器
+			是docker运行的组件，启动一个镜像就是一个容器，是一个隔离的环境
+		docker仓库 
+			集中存放docker镜像文件的仓库
+			地址：https://registry.hub.docker.com/
+			也可以搭建自己的私有registry
+
+		注 -- 镜像就是打包好的版本，镜像启动之后运行在容器中，仓库就是存储镜像的地方。
+
+		docker是内核级的虚拟化，不需要额外的hypervisor支持，实现更高的性能和效率。
+
+	特点------------------
+	1.高效的构建应用 -- 通过容器打包应用，迁移的时候只需要在新的服务器上启动需要的容器就可以
+	2.高效的资源利用 -- docker对系统的资源占用很少，一台主机上可以部署上千个容器
+	3.更简单的更新管理 -- 使用dockerfile支持灵活的自动化创建和部署机制
+
+
+	Docker说明：
+		docker 也分为：
+			社区版（Docker Community Edition (CE) ）
+			企业版（Docker Enterprise Edition (Docker EE)）
+		EE版到底强化了什么？重中之重就是安全，安全，安全
+
+
+	什么是容器:
+		对软件和其依赖的标准化打包 应用之间相互隔离（肯定没有虚拟机和物理机隔离的那么完全） 
+		共享同一个OS Kernel（同一个操作系统上） 可以运行在很多主流的操作系统上（unix，linux，windows等）
+
+
+	Docker的底层技术支持
+		容器=cgroup+namespace+rootfs+容器引擎(用户态工具LXC)
+		Cgroup（资源控制）
+		Namespace（访问隔离）
+		rootfs（文件系统隔离）
+		容器引擎（生命周期控制）
+
+2.	Docker镜像，包含了文件系统，是创建docker容器的基础
+	yum istall docker
+	docker pull --help  查看命令help
+	docker pull image-name  -- 从docker仓库拉取镜像到本地
+	docker version/info  -- 查看docker版本信息
+	docker ps -- 查看当前运行的容器
+	docker ps -a -- 查看当前系统所有的容器
+	docker images -- 查看本地镜像
+	docker inspect <image_id> -- 查看一个镜像的详细信息
+	docker search <image_name> -- 从远端仓库搜索镜像
+	docker tag image_id  xxx/ooo:tag -- 给镜像image_id做一个tag
+	docker rmi <image>:<tag>  -- 删除镜像(注:image可以是镜像ID或是标签)
+		-f --force  强制
+		这里的标签 ===> repository:tag
+		容器存在的镜像无法删除
+		一个镜像有多个标签，删除指定标签的镜像，不会影响镜像文件本身
+		如果镜像只有一个tag，删除tag就删除了镜像本身
+
+	docker commit <options> <container_id><repository:tag>  -- 创建镜像
+		参数说明：
+	    -a , --author : 作者信息
+	    -m , --meassage : 提交消息
+	    -p , --pause=true : 提交时暂停容器运行
+
+	    容器创建成镜像的方法：
+    	通过某个容器d1d6706627f1 创建对应的镜像，有点类似git
+    	sudo docker commit -m '编程坑太多' -a 'wangwei' fb53747413a8 liming/test
+    		这里 liming/test -- 是仓库名称
+    		tag不写的话，默认是 latest
+    		创建完成之后可以用 docker ps images 查看相关消息
+
+	docker save -o  <image>.tar<image>:<tag>  -- 迁出镜像(可以理解为打包)
+		参数说明：
+		-o:设置存储压缩后的文件名称
+		其中image可以为标签或ID
+		这里的标签 ===> repository:tag
+		sudo docker save -o myimage.tar liming/test
+
+	docker load --input <image>.tar 或 docker load < <image>.tar -- 载入镜像
+		说明：
+	    使用docker load命令可以载入镜像，其中image可以为标签或ID。这将导入镜像及相关的元数据信息（包括标签等），可以使用docker images命令进行查看。我们先删除原有的liming/test镜像，执行查看镜像，然后在导入镜像
+
+    docker push <域名>/<namespace>/<repo>:<tag> -- 上传镜像
+		说明：
+		可以使用docker push命令上传镜像到仓库，默认上传到DockerHub官方仓库（需要登录）
+
+3.  Docker容器相关的操作
+	docker的容器十分轻量级，用户可以随时创建或删除
+	docker create -it image_name -- 创建容器
+    	Example：docker create –ti --name container_name ubuntu
+    	说明：
+    	使用 docker create创建的容器处于停止状态，可以使用docker start命令启动它
+	docker start  -- 启动容器
+	docker run <==> docker create  +  docker start
+		docker run 背后的故事：★★★★★★★★
+			1 检查本地是否存在指定的镜像，不存在就从公有仓库下载
+			2 利用本地镜像创建并启动一个容器
+			3 分配一个文件系统，并在只读的镜像层外面挂载一层可读写层
+			4 从宿主机配置的网桥接口桥接一个虚拟接口到容器中去
+			5 从地址池配置一个IP地址给容器
+			6 执行用户的指定的用户程序
+			7 执行完毕后容器被终止
+	Example:		
+	docker run -it -d --name test_network ubuntu /bin/sh -c 'while true;do echo hello work;sleep 1;done'  -- 后台运行
+		参数说明：
+		-t: 让docker分配一个伪终端并绑定到容器的标准输入上
+    	-i: 让容器的标准输入保持打开
+    	-d: 以守护态（daemonized）形式运行
+    	此时，容器是以守护态运行的，可以查看日志
+    	docker logs <container_id>
+    	docker logs –f <container_id>动态的查看日志，类似咱们查看tomcat的日志一样
+
+    	docker stop <container_id>  -- 终止容器
+    	docker rm <container_name or container_id>  -- 删除容器
+    	不管容器是否运行，可以使用docker rm –f命令进行删除
+
+		在使用-d参数时，容器启动后会进入后台，用户无法看到容器中的信息。
+		docker exec <options> <container_id> <command>
+		Exec可以直接在容器内部运行命令。
+		进入容器：
+		docker exec -i –t <container_id> bash
+
+		run 运行一个容器后，进入容器的话，exit容器直接退出
+    	exec进入容器后，exit容器不退出，仍在后台运行
+
+	docker run -i -t ubuntu:14.04 /bin/bash -- 前台运行
+		cat /etc/hosts
+		exit -- 退出当前伪终端，并终止容器
+
+	容器的导入和导出：
+	导出容器是指导出一个已经创建的容器到一个文件，不管容器是否处于运行状态
+	docker export <container_id or container_name>  >./xxx.tar
+	导出的文件又可以使用docker import命令导入，成为镜像
+	cat xxx.tar | docker import - namespace/repository
+	导入容器生成镜像，通过镜像生成容器
+
+4.  Docker repository Docker-Hub
+	docker login -- sign in(登陆) Login Succeeded
+	可以搭建自己的私有仓库，有相应的下载加速脚本
+
+5.  数据管理：
+	数据卷是一个可供容器使用的特殊目录，有如下特性：
+		数据卷可以在容器之间共享和重用
+	    数据卷修改会立即生效
+	    数据卷的更新不会影响镜像
+	    如果有容器使用数据卷，该卷会一直存在
+
+    在使用docker run的命令时，使用 -v (volume[ˈvɑ:lju:m])
+	标记可以在容器内创建一个数据卷，并且可以指定挂在一个本地已有的目录到容器中作为数据卷
+    docker run -d --name app1-it -v ${PWD}/webapp:/root/webapp ubuntu bash
+    数据卷目录与容器内目录有映射关系，所以不管是在容器内部修改数据卷还是在外部修改数据卷，相对应的数据卷都会发生改变
+
+    注意：
+    默认挂载的数据卷的权限是rw（可读写），如果要求ro（只读），则需要加上对应的ro参数，命令可改为：
+    docker run -d --name app1-it -v ${PWD}/webapp:/root/webapp:ro ubuntu bash
+
+    数据卷容器：
+    数据卷容器用于用户需要在容器间共享一些持续更新的数据，数据卷容器专门提供数据卷供其它容器挂载使用。
+    Example:
+    创建数据卷容器db1
+    docker run -d --name db1 -v /dbdata -ti ubuntu bash
+    创建容器db2与db1共享dbdata的数据
+    docker run -d --name db2 --volumes-from db1 -ti ubuntu bash
+
+    如果删除了挂载的容器，数据卷并不会被自动删除
+    如果要删除一个数据卷，必须在删除最后一个还挂载它的容器时显示使用
+    docker rm -v 命令指定同时删除关联的容器
+
+    可以利用数据卷容器对其中的数据卷进行备份、恢复，以实现数据的迁移
+    	创建数据卷容器app-2：
+    	sudo docker run -dit --name app-2 -v /dbdata ubuntu bash
+
+    	创建容器app-3与app-2共享dbdata的数据
+    	使用${pwd}:/backup参数来挂载本地目录到app-3容器的/backup目录
+   		app-3启动后，使用tar命令将/dbdata下的内容备份为容器内的/backup/backup.tar
+    	
+    	docker run -dit --name app-3 --volumes-from app-2 -v ${PWD}:/backup ubuntu
+    	tar cvf /backup/backup.tar /dbdata
+    	这个地方疑问：执行命令之后...容器app-3为什么不是后台运行的，是终止状态的
+
+    	恢复数据到一个容器: 参照如下
+    	首先创建一个带有数据卷的容器dbdata2
+    	docker run -d -v /dbdata --name dbdata2 ubuntu bash
+
+    	然后创建另一个新的容器，挂载dbdata2的容器
+    	并使用tar命令解压备份文件到挂载的容器卷中即可
+    	docker run --volumes-from dbdata2 -v ${pwd}:/backup ubuntu tar xvf /backup/backup.tar
+
+	注意：共享数据卷问题，删数据的话，联动改变，如果是删容器，则数据卷不受影响
+
+6.  Docker 网络
+	容器与外部通信:
+
+	当容器内运行一些网络应用，要让外部访问这些应用时，可以通过-P或-p参数来指定端口映射
+	使用-P映射时，Docker会随机映射一端口至容器内部开放的端口
+	docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
+	-e 是环境变量的意思 运行容器内的环境变量设置mysql root的密码
+	
+	映射到指定地址的指定端口，为例：
+	docker run -d -p 12345:3306 -e MYSQL_ROOT_PASSWORD=my-secret --name mysql mysql:5.6
+	不加-e选项，容器是启动不了的
+
+	外部访问虚拟机的12345直接映射到容器的3306连接到数据库
+	docker port mysql 3306 -- 查看端口映射情况
+	0.0.0.0:12345->3306/tcp  0.0.0.0 代表外部的任何地址
+
+	映射到指定地址的指定端口，以127.0.0.1为例：
+	docker run -d -p127.0.0.1:3306:3306 --name mysql mysql:5.6
+
+	容器之间的互相通信：
+	使用 --link选项可以让容器之间安全的进行交互
+	之前创建了一个数据库容器mysql，现在可以创建一个web容器，使两个容器连接起来
+
+	创建一个web容器并和数据库容器建立连接：
+    docker run -d --name Webapp–p 8000:8080 --link mysql:MySQL tomcat
+	上边的MySQL别名就类似dns解析的方式，我给这个容器起了个别名叫MySQL，我就通过这个别名就可以找到对应的这个mysqldb容器
+	mysqldb容器和web容器建立互联关系。
+    --link参数的格式为--link name:alias,其中name是要连接的容器名称，
+    alias是这个连接的别名？alias还是要连接的这个容器的别名？
+
+    看连接的效果：
+    docker exec -it webapp baah
+    # ping mysql
+
+    docker run --rm @创建容器的时候，如果容器已经存在则删除已经存在的容器
+
+    ★★★★★★★★ 暂时不理解
+    Docker通过两种方式为容器公开连接信息：
+	1 环境变量：
+	使用env命令来查看
+	docker run --rm --name test --link dblink:dblink ubuntu env
+	--rm == docker rm -v
+	2 更新/etc/hosts文件
+	查看/etc/hosts文件
+	注 -- 这里容器的连接并不是互联的意思，配合上面命令理解
+
+7.  Dockerfile
+	什么是Dockerfile？
+	定义：Dockerfile是一个文本格式的配置文件，用户可以使用Dockerfile快速创建自定义镜像
+
+	基本结构：
+	Dockerfile由一行行的命令语句组成。并且支持以#开头的注释行，一般Dockerfile分为四个部分：
+		基础镜像信息
+		维护者信息
+		镜像操作指令
+		容器启动时的指令
+
+	Dockerfile示例:
+		#This is a Dockerfile
+		#Author:liming
+		#第一行必须指定基础镜像
+		FROM ubuntu
+		#维护者信息
+		MAINTAINER <394498036@qq.com>
+		#镜像的操作指令
+		RUN apt-get update
+		RUN apt-get install -y nginx
+		RUN echo “\ndaemonoff:” >> /etc/nginx/nginx.conf
+		#容器启动时的指令
+		CMD /usr/sbin/nginx
+
+	Dockerfile指令集
+
+		FROM
+		格式为 FROM <image>或<image>:<tag> 第一条指令必须为FROM指令，用于指定基础镜像
+
+		MAINTAINER
+		格式为 MAINTAINER <name> 指定维护者信息
+		
+		RUN
+		格式为 RUN <commond> 会在shell终端运行命令
+		
+		EXPOSE
+		格式为 EXPOSE <port>,[<port>...] 容器需要暴露的端口号，镜像启动可以通过–P或-p 进行端口映射的绑定
+		
+		ENV
+		格式为 ENV <key> <value> 
+		指定一个环境变量，可以被后续的RUN引用，并且在容器中记录该环境变量
+		
+		ADD
+		格式为 ADD <src> <dest>
+		该命令将复制指定的<src>到容器中的<dest>。其中<src>可以是Dockerfile所在目录的一个相对路径；也可以是url，还可以是tar文件（自动解压）
+
+		VOLUME
+		格式为 VOLUME [path]
+		创建一个可以从本地主机或其他容器挂载点，一般用来存放需要保持的数据
+
+		USER
+		格式为 USER <username>
+		指定运行容器时的用户名，后续的RUN也会指定该用户
+
+		WORKDIR
+		格式为 WORKDIR <work_path>
+		指定工作空间，运行完WORKDIR后，后续执行的RUN、CMD、ENTRYPOINT都会在此目录下执行
+
+		COPY
+		格式为 COPY <src> <dest>。
+		复制本地主机的<src>到容器中的<dest>,目标路径不存在时，会自动创建
+		当使用本地目录为源目录时，推荐使用COPY
+
+		CMD
+		推荐格式为 CMD [“executable”,”param1”,”param2”]
+		作为ENTRYPOINT的默认参数为 CMD［”param1”,”param2”］
+		指定容器的启动命令，每个Dockerfile只能有一条CMD命令，如果指定多条，只有最后一条会执行。用户启动容器时指定运行命令，会覆盖掉Dockerfile中的CMD命令
+
+		ENTRYPOINT
+
+		格式为 ENTRYPOINT [“executable”,”param1”,”param2”]
+		配置容器启动后的命令，可被docker run提供的--entrypoint参数覆盖
+		每个Dockerfile只能有一条ENTRYPOINT命令，如果指定多条，只有最后一条会执行
+
+	创建命令：
+		docker build  –t <镜像名称:tag> .
+		注意：执行此命令要和Dockerfile在同级目录，
+		文件名称必须为Dockerfile。命令后面的”.”表示在当前目录下执行
+
+		docker images -- 查看刚才build的镜像
+		用image_id启动容器，进入容器
+		安装其他相应的工具:
+		apt-get update & apt-get install vim 
+
+	Dockerfile最佳实践
+		错误定位
+		每个Dockerfile的指令可以生成新的一层镜像，如果通过Dockerfile创建镜像出错，可以根据出错所在步骤的上一层启动容器，然后手工执行出错层的命令，以达到调试目的。
+
+		好的使用习惯
+		http://dockone.io/article/131
+		http://dockone.io/article/132
+
+	docker build --no-cache，如此便不会缓存
+	interactive container  -- 交互式容器
+	daemonized container -- 守护式容器  --- 常用
+	创建守护式容器  -d 参数
+	查看容器的运行日志:   sudo docker logs container_name  加上 -f参数 <==> tail -f 
+	还有一个很实用的命令    sudo docker ps -n x  类似与 sudo docker ps -a
+	该命令会显示最后x个容器，不论这些容器正在运行还是已经停止
+	sudo docker rm containerId  -- 删除容器
+	运行中的容器式无法被删除的 (docker kill "or" docker stop)
+	删除所有的容器:
+		docker rm `docker ps -a -q`
+
+	制作自己的image --
+	cd -- 到项目的根目录...
+	前置工作: 新建一个 .dockerignore文本文件，写入要排除的路径
+		.git 
+		node-debug.log
+		....
+		书写 Dockerfile文件
+		FROM node:8.4   -- 继承官方8.4版本的node
+		COPY . /app     -- 复制当前目录下app下的所有文件到image的指定目录中
+		WORKDIR /app    -- 指定接下来的工作目录
+		RUN npm install --registry=https://registry.npm.taobao.org
+		EXPOSE 3000     -- 将容器的3000端口暴露出来，允许外部链接这个端口
+		-p参数：容器的 3000 端口映射到本机的 8000 端口。 
+		-it参数：容器的 Shell 映射到当前的 Shell，然后你在本机窗口输入的命令，就会传入容器
+		/bin/bash：容器启动以后，内部第一个执行的命令。这里是启动 Bash，保证用户可以使用 Shell
+
+		FROM node:8.4 
+		COPY . /app 
+		WORKDIR /app  
+		RUN npm install
+		EXPOSE 3000
+		CMD node demos/01.js
+
+		上面的 Dockerfile 里面，多了最后一行CMD node demos/01.js
+		它表示容器启动后自动执行node demos/01.js。 
+		你可能会问，RUN命令与CMD命令的区别在哪里？简单说:
+		RUN命令在 image 文件的构建阶段执行，执行结果都会打包进入 image文件；CMD命令则是在容器启动后执行。另外，一个 Dockerfile 可以包含多个RUN命令，但是只能有一个CMD命令。 注意，指定了CMD命令以后，docker run命令就不能附加命令了（比如前面的/bin/bash），否则它会覆盖CMD命令。现在，启动容器可以使用下面的命令。
+		docker的主要用法就是上面这些，此外还有几个命令，也非常有用。
+
+		(1) docker start
+		前面的docker run命令是新建容器，每运行一次，就会新建一个容器。同样的命令运行两次，就会生成两个一模一样的容器文件。如果希望重复使用容器，就要使用docker start命令 它用来启动已经生成、已经停止运行的容器文件。
+
+		(2) docker stop 
+		前面的docker skill命令终止容器运行 ，相当于向容器里面的主进程发出SIGKILL信号。而docker stop命令也是用来终止容器运行
+		，相当于向容器里面的主进程发出SIGTERM信号，然后过一段时间再发出SIGKILL信号。
+		这两个信号的差别是，应用程序收到 SIGTERM 信号以后，可以自行进行收尾清理工作 ，但也可以不理会这个信号。
+		如果收到SIGKILL信号，就会强行立即终止，那些正在进行中的操作会全部丢失。
+
+		(3) docker logs 
+		docker logs命令用来查看docker容器的输出，即容器里面Shell 的标准输出。 如果docker run命令运行容器的时候，没有使用-it参数，就要用这个命令查看输出。
+		$ docker container logs [containerID]
+
+		(4) docker exec 
+		docker exec命令用于进入一个正在运行的 docker 容器。如果docker run命令运行容器的时候，没有使用-it参数，就要用这个命令进入容器。一旦进入了容器，就可以在容器的 Shell 执行命令了。$ docker exec -it [containerID] /bin/bash
+
+		(5) docker cp 
+		docker cp命令用于从正在运行的 Docker 容器里面，将文件拷贝到本机。
+		下面是拷贝到当前目录的写法。
+		$ docker cp [containID]:[/path/to/file] .
+
+8.  Docker compose 编排和配置容器集群的工具
+	场景：redis容器，tomcat容器，nginx容器，mysql容器，这4个容器的启动是有顺序性的，docker compose就是为了组合启动的，而不是手动来启动
+
+	Docker compose的安装:
+	curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+	curl选项说明：
+		-L 有的网址是自动跳转的。使用-L参数，curl就会跳转到新的网址
+		-o Write output to <file> instead of stdout
+	docker-compose version 检查是否安装成功
+	chmod +x/usr/local/bin/docker-compose 给文件执行的权限
+
+	Docker compose使用入门:
+	docker-compose 相关命令可使用 docker-compose --help查看
+	Example:
+	dockerfile -文件
+		FROM python:2.7
+		ADD . /code
+		WORKDIR /code
+		RUN pip install -r requirements.txt
+		CMD python app.py
+
+	docker-compose.yml - 文件	
+		version: '2'
+		services:
+	        web:
+                build: .
+                ports:
+                    - '5000:5000'
+                volumes:
+                    - .:/code
+                depends_on:
+                    - redis
+	        redis:
+                image: redis
+
+9.  什么是DockerMachine？
+	Docker Machine是一个工具，它可以帮你在虚拟主机安装docker，并且通过docker-machine 相关命令控制主机，DockerMachine是当前docker运行在mac或者windows上的唯一方式，
+	并且操作多种不同linux 系统的docker主机的最佳方式
+
+10. 什么是DockerSwarm
+	容器集群管理工具
+
+Kubernetes -- 相关内容
+
+
+
+
+
+

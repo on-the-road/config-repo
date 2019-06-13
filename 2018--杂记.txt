@@ -1,0 +1,372 @@
+	软件构件相关
+	embedded -- 'imbedid'  --- 植入的，内含的，深入的.
+	semantic -- 'simantic' --- 语义的,语义学的
+	scene -- 'si:n' ---场面，场景
+	agent [ˈeɪdʒənt] n. 代理人，代理商
+	declarative [diclairetiv] -- 宣言的，公布的
+	credentials [krə'denʃlz] -- 证书，凭证
+	perforce -- 必然的，必要的
+	cruise control  -- CC 巡航控制,持续控制
+	DamageControl -- DC 损害控制,伤害控制
+	continuous integration -- CI 持续集成
+	continuous delivery -- CD 持续交付
+	delivery [di'liveri] -- 分娩，传送，交付  ----名词
+	nexus -- [neksəs] 奈克瑟斯  -- (事物或是思想等之间的)联系，关系
+	lucene -- [lusen] 一个全文搜索引擎
+	DSL (domain specified language) -- 领域特定语言
+	Authentication --- 认证，身份验证等
+	Authority -- 权威，权力 
+	Authorization -- 授权，批准 
+	greeting -- 招呼，问候，祝贺
+	anonymous [ə'na:niməs]-- 匿名的，无名的
+	fixation [fik'seifn] -- 固着，固恋
+	cryptography[krip'tagrəfi] -- 加密系统,方法
+	realm [relm] -- 领域，范围 
+	strategy ['strætədʒi] -- 策略，战略
+	implicit [im'plisit] -- 含蓄的，不言明的，绝对的..
+	forgery ['fɔ:dʒəri] -- n.伪造，伪造物... 伪造签字
+	symmetric [si'metrik] -- 对称的，均衡的 
+	alphabet ['ælfəbet] -- 字母表，字母系统，入门，初步
+	atlassian [ætlæsiən] -- 澳大利亚一家软件公司 --产品(JIRA Bamboo Sourcetree)
+	issue [iʃu:] 问题，报刊的期，号等
+	ambiguous [æm'bigjuəs] 模棱两可的，有歧义的
+	phrase [freiz] 成语，短语
+	kubernetes [kubə'netis] 领航员  简称 k8s 
+	hypervisor ['haipəvaizə] 系统:管理程序
+	linear [linier]li  n year  --- 线性的，直线型的
+	avatar ['i ve ta] ai 额 他  ----头像，阿凡达
+	linear search -- 顺序查找
+	binary search -- 二分查找
+	binary tree search -- 二叉树查找
+	netflix -- [netflaix]  一个收费的视频站点
+	eureka [ju: 'ri:ke] -- 我发现了，我找到了（尤指发现问题的答案而兴奋）
+	eureka --- 一个服务的注册和发现模块
+	feign [fein] -- 伪装，虚构
+	ribbon [riben] -- 发'额'的音 ---色带，把..撕成条带  区别于 robin ---知更鸟，罗宾
+	fallback -- 回退物，或者可以理解为备胎...
+	hystrix  [hist'riks]-- 高起，鳞癣
+	circuit ['se:kit] --额的音  电路，线路，环路
+	zuul [zu:l] --祖鲁
+	zipkin --链路追踪
+	sleuth [slu:s] --足迹，侦探
+	bare metal -- 裸机
+	docker -- 是集装箱的意思...
+	operand [] --操作数，运算数
+	computed : vue中就是属性的实时计算，或者理解为实时运算，实时更新
+	replicas[replikeis] 复制品，副本
+	executive [ig'zektiv] 总经理，管理的，
+	officer 军官，高级职员，指挥官
+	immutable [i'mju tebl] 不可改变的
+	mutable [mju tebl] 可改变的
+	daemon [di:man] 守护进程，守护神（希腊神话人物）
+	ancestor [an'siste] 祖先，原种 (安 sis 特尔)
+	prior [prai额] 在..之前，优先的 n:小修道院的院长
+	extracting [iks'traiktin] 萃取，提炼，提取
+	CEO -- Chief Executive Officer 首席执行官，行政总裁等
+	CTO -- Chief Technology Officer 首席技术官，最高技术负责人
+	HRD -- Human Resource Director 人力资源总监
+	hook -- 钩子，程序中的钩子，钩子链表 可以理解为一个切面
+	swagger ['swaige] 吹嘘，夸耀,昂首阔步,恐吓，欺骗
+	mustache [me'sta:f] 摩尔'斯他是 胡子，胡须
+	dynamic behavior 动态行为
+	SPA --single page application 单页面应用程序
+	side effect -- 副作用
+	monitor  -->监视器  ，班长
+	boot   --->长靴，鞋子，行李箱
+	actuator [æktʃʊeɪtə] -->激励者，促动器
+	groovy  --> [gru:vi] 绝妙的，沟的，槽的
+	observer -->观察者 观察员
+	snapshot 快照，照片，简介，缩影
+	harmony[ha:'meni] 额 -->和谐，融洽
+	presenter ->节目主持人
+	duplicate -> 复制 重复  [ˈdu:plɪkeɪt]
+	bower ->凉亭，树荫
+	mount ->挂载，安装
+	artifact [] -->项目或程序的打包部署  艺术品 “生成的东西”
+	exploded [ɪkˈspləʊdɪd] adj. 解压开的，打破的,
+	netstat	英[nets'teɪt]  查询网络相关信息
+	profile  : 半面，侧面，轮廓.
+	kernel	: 核心，核
+	algorithm: 算法(计算机)
+	cipher: 密码，无价值的东西  [s ei f e]
+	cordova:科(尔)多瓦 地名，人名
+	fanout : 扇出？
+	elastic :有弹性的，富有活力的
+	erase: i rei z  ,抹去，擦掉，清除
+	round-robin :轮询
+	aurora :[ao rao re]  北极光，曙光，晨曦  （奥罗拉）
+	marathon [mai re zin] :马拉松
+	archetype: [a:  ki  type] :原型，典型
+	recursion [ri ke shen] : 递归 递推
+	survivor [se vaive]  --饿 幸存者，生还者
+	verbose [ve bous] --详细信息，冗长的，冗繁的
+	surefire [sure fire] --万全的，一定的
+	allocate [ailekeit] ai l 额 keit  : 分配，分派...
+	valve [vailv] 阀...活栓
+	detect [ditekt] 发现，觉察..
+	chapter [tfaipte] 章，回 --晒不特尔
+	pivotal [ˈpɪvətl] 关键的，中枢的  --开发springboot的团队
+	directive [direktiv] 指令，命令  vue中的 v-bind,v-on等指令
+	exclude [ɪkˈsklu:d] 排除
+	brothel [ˈbrɑ:θl]  妓院
+	swarm [swɔ:rm] 泛滥，云集，蜂群 docker原生的容器集群编排系统（kubernetes,mesos等）
+	infrastructure [ˈɪnfrəˌstrʌktʃɚ] 基础建设
+	benchmark 基准测试，基准检测
+	flake [fleik] 碎片，火星，薄片
+	latch [lætʃ] 弹簧锁，门闩，门別棍
+	harness 马具，系带
+	slot [sla:t] 插槽，狭槽
+	sentry ['sentri] 哨兵，警卫
+	sentinal [ˈsɛntənəl] 哨兵，哨岗
+	banner [ˈbænɚ] 横幅，标语
+	aim [eim] 致力于，以什么为目标
+	concern [kənˈsɜ:n] 涉及，关系到
+	portal [pao:tl]  --入口，入门的
+	When it comes to seafood, i like shrimp  best!  -- 河虾
+	primitive [primitiv] 原生的，原始的，落后的
+	soar [s ao:(r)] 高飞，高耸，剧增等
+	maintainer [men'teine] 维护者，维护物
+	real-time 实时的，即时的
+	poll [pəʊl] 得到(一定数目)的选票，对...民意调查，修建
+	aggregator [’æɡrɪ,ɡeɪtər] 聚合器，整合者，聚合
+	encrypt [in'kript] 加密，将..译成密码
+	retention [rɪˈtɛnʃən] 保留，记忆力，滞留
+	correlation [ˌkɔ:rəˈleɪʃn] 相关性，相互关系
+	anatomy [əˈnætəmi] 解剖，分解
+	atomic [əˈtɑ:mɪk] adj -- 原子的，原子能的
+	patch [pætʃ] 补丁，小块，眼罩
+	mesh [mɛʃ] 齿轮的啮(nie-四声)合，网状物
+	sidecar -- 边车，尤指带跨斗的摩托车的跨斗
+	guava [ɡwɑvə] 番石榴
+	eviction [ɪ'vɪkʃn] n. 驱逐，赶出，(房屋等.)收回
+	capture [ˈkæptʃɚ] vt. 俘获，夺得，夺取
+	annual [ˈænjuəl] adj. 一年的，每年的
+	migrate [ˈmaɪgreɪt] vi.vt. 迁移，移居
+	invoice [ˈɪnˌvɔɪs] n. 发票，发货单
+	universal [ˌju:nɪˈvɜ:rsl] adj. 普遍的，通用的，万能的
+	scenario [səˈnærioʊ] n. (行动的)方案，剧情概要
+	raft [ræft] n. 木筏，橡皮艇
+	candidate [ˈkændɪˌdet] n. 报考者，申请求职者
+	election [ɪˈlɛkʃən] n. 选举，选举权
+	bucket [ˈbʌkɪt] n. 水桶，一桶(的量)
+	horror [ˈhɔ:rə(r)] n. 恐怖，可怕的事情，<口>非常丑恶
+	dodgy [ˈdɑ:dʒi] adj. 躲闪的，逃避的，糟糕的  dodgy code -- 糟糕的代码
+	debt [dɛt] n. 债务，义务，罪，过失 technical debt -- 技术债务
+	compliant [kəmˈplaɪənt] adj. 遵从的，符合的，一致的
+	throughput [ˈθruˌpʊt] n. 生产力，吞吐量
+	latency [ˈletn:si] n. 延迟，潜在因素
+	abort [əˈbɔ:rt] vt. 使流产，使夭折
+	artificial [ˌɑ:rtɪˈfɪʃl] adj. 人工的，人造的，虚拟的
+	velocity [vəˈlɑ:səti] n. 速率，高速
+	bloom [blu:m] n. 花，花开期，健康有精神的面貌
+	bloom filter -- 布隆过滤，是一种算法
+	horizontal [ˌhɒrɪˈzɒntl] adj. 水平的，卧式的
+	opacity [oʊˈpæsəti] n. 透明度，模糊
+	divert  [daɪˈvɜ:rt] vt. 使转移，转移注意力
+	pickle [ˈpɪkəl] n. 腌菜，泡菜，python中的序列化模块
+	struct [strʌkt] n. [计] 结构，结构体
+	matrics [mə'trɪks] [网络] 矩阵
+	culprits ['kʌlprɪts] n. 罪犯，肇事者，产生问题的事物
+	pillow [ˈpɪloʊ] n. 枕头，垫子
+	utility [juˈtɪləti] n. 功用，效用
+	deactivate [diˈæktəˌvet] vt. 使无效，复员
+	quit [kwɪt] vt/i. 放弃，离开，停止，辞职
+	tunnel [ˈtʌnəl] n. 隧道，地洞，巢穴
+	flask [fla:sk] n. 瓶子，长颈瓶
+	Django [jengou] n. 一个吉他手的名字 -- 煎购
+	coroutine [kəru:'ti:n] n. 协同程序，协程
+	yield [ji:ld] vt/i. 生产，生利，退让，屈服，放弃
+	crawler [ˈkrɔlɚ] n. 爬虫，python-crawler -- python爬虫
+	hitchhike [ˈhɪtʃˌhaɪk] n. 搭便车 The hitchhiker's guide to python -- python最佳实践
+	statistics [stəˈtɪstɪks] n. 统计分析，统计学
+	tip [tip] n. 小费，小窍门
+	tolerance [ˈtɑ:lərəns] n. 容忍，宽容
+	bullshit [bul'shit] n. 胡说，哄骗，狗屎
+	parallel [ˈpærəˌlɛl] adj. 并行的，平行的，类似的
+	scavenge [ˈskævəndʒ] vt. 打扫，清洁，(在废物中)寻觅
+	phase [feiz] n. 阶段，相，相位
+	phrase [freiz] n. 成语，短语 vt. 叙述，措辞
+	coordinator [koʊ'ɔ:dənˌeɪtə] n. 协调者
+	paxos [peiksas] n. 配克萨斯  -- 一种分布式算法
+	optimize [ˈɔ:ptɪmaɪz] vt. 优化，充分利用
+	trick [trik] n. 恶作剧，戏法，把戏  vt. 哄骗，欺骗
+	brute [bru:t] n. 畜生，残暴的人，【计算机】暴力搜索
+	alpine [ˈælˌpaɪn] adj. 高山的，阿尔卑斯山的
+	infra ['ɪnfrə] adv 以下，在下，下文   --- it infra ===> it基础架构
+	privacy [ˈpraɪvəsi] n. 隐私，隐秘，不受公众干扰的状态
+	paste [pest] vt.粘贴 n.面团
+	clip [clip] vt. 修剪，给...剪毛   --- clipboard 剪贴板
+	axios [æksi'əus] .前端一个基于promise的http库
+	factorial [fækˈtɔ:riəl] adj.因子的，阶乘的 n. 阶乘
+	semaphore [ˈseməfɔ:(r)] vt. 发出信号，打旗语 n.信号量
+	reentrant [ri:'entrənt] n. 再进去，凹角
+	cyclic [ˈsaɪklɪk] adj. 周期的，循环的，轮转的
+	barrier [ˈbæriə] n. 屏障，栅栏，分界线
+	chubby [ˈtʃʌbi] adj. 胖乎乎的，丰满的
+	zookeeper [zu:ki:pər] n. 直译 - 动物园管理员
+	quota [ˈkwoʊtə] n. 配额，指标，限额
+	ephemeral [ɪˈfɛmərəl] adj. 朝生暮死的，短暂的，临时的
+	sequential [sɪˈkwɛnʃəl] adj. 相继的，有序的
+	proposal [prəˈpoʊzl] n. 提议，建议，投标
+	epoch [ˈipəu k] n. 世纪，纪元
+	crash [kræʃ] n. v. 碰撞，崩溃，暴跌
+	blame [bleim] vt. 归咎于，指责，责备   n. 责任，过失
+	reject [rɪˈdʒɛkt] vt. 拒绝，排斥，抛弃
+	maximum [ˈmæksɪməm] adj. 最大值的，最大量的
+	toby [ˈtəubi] n. 街 道路
+	quorum [ˈkwɔ:rəm] n. 法定人数  quorumpeer -- 可以简单理解为定量服务数(zookeeper中)
+	peer [pɪə] vi. 凝视，盯着看，比得上  n. 同伴，同等的人
+	pear [pɪə] n. 梨
+	temporal [ˈtempərəl] adj. 时间的，世俗的，暂存的
+	adjuster [ə'dʒʌstə] n. 调停者，调节器
+	suffix [ˈsʌfɪks] n.词尾，后缀
+	zigzag [ˈzɪɡˌzæɡ] adj. 锯齿形的
+	nomalize [ˈnɔ:məlaɪz] v.使正常化，使标准化
+	druid ['dru:ɪd] n. 棉帆布  -- 猪--医德
+	sparse [spɑ:s] adj. 稀疏的，缺少的  sparse-graph -- 稀疏图
+	dense [dens] adj. 浓稠的，稠密的 dense-graph -- 稠密图
+	matrix [ˈmetrɪks] n. 基数，<数>矩阵，母体
+	consider [kənˈsɪdər] vt. 考虑，仔细思考，把(某人，某事)看作...
+	apollo [ə'pɒləʊ] n. 阿波罗，太阳神  
+	canal [kəˈnæl] n. 运河，管道，食道
+	periodially [ˌpɪərɪ'ɒdɪklɪ] adv. 周期性地，定期地
+	dynasty [ˈdɪnəsti] n.王朝，朝代
+	exponent [ɪkˈspəʊnənt] n. 指数，样品，说明物
+	median [ˈmi:diən] adj. 中央的，中间的 n. 中位数，中线
+	peek [pi:k] vi.n. 窥视，偷看
+	thymeleaf [taim1li:f] n. 百里香叶
+	azure [ˈæʒə] adj. 蔚蓝的，天蓝色的，微软云
+	amazon [ˈæməzən] n.亚马逊河
+	traversal [træ'vɜ:sl] n.横越，遍历，往返移动
+	raw [rɔ:] adj. 生的，发炎的，疼痛的 n. 半成品，原料
+	plain [plein] n. 平原，平地，朴实无华的东西 adj. 素的，普通的，相貌平平的
+	ordinary [ˈɔ:rdənəri] adj. 普通的，一般的
+	substitution [ˌsʌbstɪ'tjuːʃ(ə)n] n.置换，取代
+	segregation [ˌseɡrɪˈɡeɪʃn] n.隔离政策，隔离措施
+	composite [ˈkɒmpəzɪt] adj.合成的，混合的 n.合成物，混合物
+	concrete [ˈkɒŋkriːt] adj.混凝土的，具体的，确实的，有形的  n.混凝土
+	symmetric [sɪ'metrɪk] adj.对称地，均衡的
+	asymmetric [ˌæsɪˈmɛtrɪk] adj.不对称的，不均匀的
+	device[dɪˈvaɪs] n.装置，策略，手段等
+	mandatory [mændətəri] adj. 义务的，强制的，法定的
+	idle [aɪdl] adj. 无聊的，无目的的， vt. 虚度，使空闲
+	protocol [ˈprəʊ.tə.kɒl] n. 协议，公约
+	negotiation [nəˌɡəʊ.ʃiˈeɪʃən] vt. 协商，谈判  content negotiation 内容协商
+
+
+HashMap中 -- 
+	jdk-1.7与jdk-1.8略有不同
+		TREEIFY_THRESHOLD 用于判断是否需要将链表转换为红黑树的阈值
+		Entry -- > Node (两者内部一样)
+
+webSocket -- 浏览器与服务器的全双工通信
+		使得服务器也能主动向客户端发送数据
+		传统方式：轮询（polling）和Comet技术，后者也是一种轮询，只不过有所改进而已。
+				polling -- 浪费流量和服务器资源
+				comet -- 
+html & css & javascript
+	响应布局适应浏览器的宽度在任何给定时间 ，而自适应布局只在特定的断点适应浏览器的宽度。
+	不要试图跟上 。 不可能。 你今天投注的任何系统将被明天更好的东西取代。
+	webpack是一款模块加载器兼打包工具，它能把各种资源，例如JS（含JSX）、coffee、样式（含less/sass）、图片等都作为模块来使用和处理。
+	在 Vue 里，一个组件实质上是一个拥有预定义选项的一个 Vue 实例
+	event.preventDefault();   --->阻止元素发生默认的行为例如，当点击提交按钮时阻止对表单的提交
+		event 必须，阻止那个事件的动作
+	event.stopPropagation(): 阻止事件向父元素传播
+	vue  :表单控件绑定   --->  vue 定义了一个变量与表单内部组件的value相关联，form 内部组件状态改变 ，这个变量自动获取 组件的value 值
+
+
+
+
+Issues
+每个issue有五个等级： 
+1. BLOCKER:会影响应用程序的缺陷：内存泄漏，未关闭的JDBC连接…必须立刻修复的代码； 
+2. CRITICAL ：可能会影响应用程序的缺陷或者是安全性缺陷：空的catch块，sql注入，…必须立刻查看代码； 
+3. MAJOR：可能会影响开发者效率的质量缺陷：未覆盖的代码，重复块，未使用的参数…. 
+4. MINOR：可能会影响开发者效率的质量缺陷：每行不能太长，“switch”语句应该至少有三个条件，…. 
+5. INFO：既不是缺陷也不是质量问题，只是一个发现
+
+阻断，严重，主要，次要，提示
+
+严重的程度:
+Security Rating: 
+A = 0 Vulnerability
+B = at least 1 Minor Vulnerability
+C = at least 1 Major Vulnerability
+D = at least 1 Critical Vulnerability
+E = at least 1 Blocker Vulnerability
+
+sonarQube -- 怎么添加代码规则？
+sonarLint -- 怎么绑定远程server?
+
+集成 -- sonarCloud github
+mvn sonar:sonar \
+  -Dsonar.projectKey=testProjectKey \
+  -Dsonar.organization=pld \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.login=dd9b98917b21201698e444d5e333f87cf0617599
+mvn sonar:sonar -Dsonar.projectKey=molto-account -Dsonar.organization=on-the-road-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=dd9b98917b21201698e444d5e333f87cf0617599
+
+
+mvn sonar:sonar \
+  -Dsonar.projectKey=molto-account \
+  -Dsonar.organization=on-the-road-github \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.login=dd9b98917b21201698e444d5e333f87cf0617599
+
+
+http://39.105.135.200:8082
+admin  -- admin
+
+mvn clean package -Dmaven.test.skip=true
+target/*.jar
+target/
+/miofun-jar/account
+sh /home/wwei/miofun-shell/account.sh
+
+
+1. 值得记忆的公众号：
+	程序员私房菜
+	程序员乔戈里
+	编程坑太多
+	日常学python
+
+素材种类(1-正版素材（包括-行业、镜头、自定义） 2-特效镜头 3-主题视频)
+素材种类下的分组(1-场景 2-风格 3-镜头 4-类别 5-行业 6-自定义)
+Term Frequence == TF 词频，指的是某一个给定的词语在该文件中出现的频率
+Inverse Document Frequence == IDF 逆向文件频率，是一个词语普遍重要性的度量
+
+
+model: 1 - 普通分词
+	   2 - 权重
+	   3 - 词性标注  -- 需要排序
+
+
+{"body":{"errorCode":100,"errorMsg":""},"headers":
+{"Server":["TornadoServer/6.0.2"],"Content-Type":["application/json; charset=UTF-8"],
+"Date":["Wed, 24 Apr 2019 08:40:03 GMT"],"Content-Length":["87"]},"statusCode":"OK","statusCodeValue":200}
+
+
+付费类型(0，会员免费：1，会员专享：2，仅付费可用：3，限时免费：4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+ 

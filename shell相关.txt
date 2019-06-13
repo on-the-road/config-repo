@@ -1,0 +1,743 @@
+1.echo、单纯的输出内容
+  如果内容有空格，可用双引号。这里单引号和双引号是有区别的
+  -e选项：支持特殊符号
+  -n选项：不换行输出
+
+2.dos2unix 格式转换命令
+
+3.Linux上：小于1024的端口称为特权端口。
+
+解压文件：
+	rpm -ivh file.rpm -- 安装rpm包
+	tar -zxvf file.tar.gz
+		-z:使用gzip进行压缩/解压
+		-v:显示详细信息 verbose
+		-x:对打包的文件进行解压操作
+		-c:创建一个新的打包文件 archive
+		-C:指定解压到哪个目录
+		-f:后面接要操作的文件
+		-p:保留文件的权限和属性，在备份时比较有用
+	压缩的时候：创建一个打包文件，对打包文件使用gzip进行压缩
+
+	
+关闭防火墙
+	service firewalld stop
+
+查看系统所有进程
+	ps aux unix格式  ---ps 命令是查看系统所有的进程
+	a --前台进程
+	x -- 后台进程
+	u --进程由那个用户产生的
+	输出列信息有：
+	用户 pid cpu mem vsz(占用虚拟内存)
+	rss(占用物理内存) tty（在那个终端中运行的）
+	stat(进程状态) start(进程启动时间)
+	time(进程占用cpu的运算时间)
+	command(产生该进程的命令或是进程名称)
+	ps -le linux格式 两者意思基本一样。
+
+软链接：ln -s 源文件 目标文件 --- 相当于快捷方式，inode节点是不同的
+硬链接：ln 源文件 目标文件 --- 相当于 cp -p，同时具有同步更新的功能
+删除源文件对硬链接没有影响。inode节点（文件id）是一样的，故能同步更新。硬链接不能跨分区
+举例：c盘的文件不能在d盘创建硬链接。不能针对目录进行硬链接操作
+
+更改文件的权限，两类角色 - 1、管理员 2、文件的所有者
+更改文件的所有者只能是管理员 chmod -- > change the permissions mode of a file
+
+
+linux用户分为三类
+	u -- 文件的所有者 user
+	g -- 文件所有者所属的组 group
+	o -- 其他用户 other
+	a -- 所有用户 all
+	u+x、o-r...权限设置相关 加减号、u=rwx等号
+	r -- 4 w -- 2 x -- 1 数字表示法
+
+这里要理解一下，rwx对文件的意思和目录是有区别的
+	r -- 可以列出目录中的内容，对文件可以查看文件的内容
+	w -- 在目录下创建和删除文件，对文件可以修改文件内容
+	x -- 可以进入目录，对文件可以执行文件
+	删除文件的前提，对这个文件所在的目录有x权限才可以
+
+cat  filename | grep -v '^#' | grep -v '^$'   过滤掉注释和空行查看一个文件
+ps  -ef | grep port   查看该端口号相关的进程信息
+kill -9  进程号
+netstat (param -nutl)查询网络状态，显示网络相关信息，常用的选项：
+	-t tcp协议
+	-u udp协议
+	-l 监听
+	-r 路由
+	-n 显示ip地址和端口号
+netstat -nult查看本机有哪些端口处于监听状态
+netstat -an 查看所有的监听信息，可以查看正在连接的网络程序，发起端口是随机的，目标端口是固定的
+
+Linux-常用的查找命令find、locate(updatedb)、grep、which、whereis
+	file查看文件类型，type查看命令类型，目录和文件不能重名...
+	stat命令用于显示文件的元数据(诸如人的，姓名，身高，年龄等)
+	pwd print working directory 打印当前工作目录
+
+硬盘 VS 分区
+/dev的英文全称为devices设置的缩写，该目录保存了Linux的所有设备文件，所以说每个设备都有一个设备文件来管理
+例如管理硬盘的文件[ide格式]，第一个硬盘 /dev/hda，第二个硬盘 /dev/hdb
+而分区则是hda的第一、二个分区那么就是 /dev/hda1，/dev/hda2
+
+history: /etc/profile下的环境变量默认1000条
+	-c -- 清除 历史命令
+	-w -- 写入文件
+	保存位置：/home/user/.bash_history
+
+输入输出重定向：
+	0 - 标准输入
+	1 - 标准输出
+	2 - 标准错误输出
+
+	ls > abc.file - 输出重定向，单大于号是覆盖的意思
+	ls >> abc.file - 双大于号是追加的意思
+	ls 2>> abc.file - 注意2与大于号之间不能有空格
+	ls &>> abc.file - 命令的正确信息和错误信息都保存在文件中，追加的方式
+	ls &> /dev/null - 输出信息丢入垃圾箱
+	ls >> abc.file 2>> ab.file
+
+判断一条命令是否正确执行：
+	ls && echo yes || echo no
+	grep -n keyword /etc/file 显示行号 -- 搜索带关键字的行
+	grep -v keyword /etc/file 取反
+	grep -w keyword /etc/file 精确匹配
+	grep --color=auto keyword /etc/file
+	grep -q hello.txt   --- quiet  静默输出
+	grep -e Example: grep -e pattern1 -e pattern2 filename 模式匹配
+
+grep的-A-B-选项详解
+	grep能找出带有关键字的行，但是工作中有时需要找出该行前后的行，下面是解释
+	1. grep -A1 keyword filename
+	找出filename中带有keyword的行，输出中除显示该行外，还显示之后的一行(After 1)
+	2. grep -B1 keyword filename
+	找出filename中带有keyword的行，输出中除显示该行外，还显示之前的一行(Before 1)
+	3. grep -1 keyword filename
+	找出filename中带有keyword的行，输出中除显示该行外，还显示之前的一行(After 1)和显示之后的一行(After 1）
+	4. grep -C1   ===== grep -A1和grep -B1的组合使用，显示匹配行的前后几行
+
+linux中单引号和双引号的区别：
+	单引号中特殊字符 --- 看做是普通字符对待
+	双引号中特殊字符 --- 有特殊的意思，比如 \ 就是转义符 $ 是引用变量。
+	反引号 和 $()小括号的作用一样。
+
+shell中定义局部变量和全局变量：这里记住export关键字。
+	局部变量： x = 1234;
+	全局变量： export y = "hello world";
+	取消变量的全局属性；export -n y ---> y即是变为局部变量。
+	&> ：混合输出 ---> 错误和正确的信息都输出到一个位置。
+
+passwd --stdin:
+	passwd默认是要用终端作为标准输入,加上--stdin表示可以用任意文件做标准输入于是这里用管道作为标准输入
+	shell 条件控制中： 0 -- true  1 -- false  test -edfrwx....
+	echo $? -- 查看上一条命令是否执行成功
+
+jps -- commond :查看java进程pid命令
+
+centos7 -- firewalld的一些相关命令：
+	firwall-cmd --permanent --add-port=9527/tcp
+	参数介绍：
+	1、firwall-cmd：是Linux提供的操作firewall的一个工具；
+	2、--permanent：表示设置为持久；['per man neit] 永恒的，持久的。 ---破门能特
+	3、--add-port：标识添加的端口；
+	另外，firewall中有Zone的概念，可以将具体的端口制定到具体的zone配置文件中。
+	例如：添加8010端口
+	firewall-cmd --zone=public --permanent --add-port=8010/tcp
+	--zone=public：指定的zone为public；
+	查看已经开放的端口：firewall-cmd --list-ports
+	查看firewall运行状态：firewall-cmd --state
+	重载生效端口设置：firewall-cmd --reload
+	删除一个端口：firewall-cmd --zone= public --remove-port=80/tcp --permanent
+
+	centos7 --- service ---> systemctl stop httpd.service
+		-- systemctl status services --
+
+nohup: -- ignoring hangup signals   程序后台启动命令，不挂断的运行命令。
+	命令的一般形式为：nohup command &
+	例如：linux上启动一个jar包程序：
+	[root@aca85095 test]#	nohup java -jar common-service.jar &> /dev/null &
+	Permission denied --- 拒绝访问
+	permission 认可，允许，批准的意思
+	deny[di'nai] 拒绝
+
+gitlab --- 一些操作命令
+	gitlab-ctl start ---启动
+	gitlab-ctl stop ---停止
+	gitlab-ctl status ---查看状态
+	gitlab-ctl restart ---重启
+	gitlab-ctl tail [redis/nginx...] ---查看日志
+
+find的几个常用命令：
+	列出当前目录及子目录下所有文件和文件夹
+	find .
+	在/home目录下查找以.txt结尾的文件名
+	find /home -name "*.txt"
+	同上，但忽略大小写
+	find /home -iname "*.txt"
+
+uniq 命令删除文件中的重复行
+	-c :在输出行前面加上每行在输入文件中出现的次数 
+
+安装软件：执行rpm -ivh rpm包名
+	在下载linux的某些软件时总是会看到以.noarch.rpm和.src.rpm结尾的软件包
+	noarch表明与处理器无关，src是源码包需要编译
+	no - arch(平台)  ===> 与平台无关
+	centos7 安装 mysql相关：
+	rpm -ivh mysql-community-release-el7-5.noarch.rpm
+	安装这个包后，会获得两个mysql的yum repo源：/etc/yum.repos.d/mysql-community.repo，/etc/yum.repos.d/mysql-community-source.repo
+
+本地项目上传到gitlab操作步骤：
+	1.进入项目文件夹 -- $ git init , $ git remote add origin git@172.168.80.149:info-dept/common-service.git
+	2. $ git add . , $ git commit  -m 'remark'
+	3. $ git push -u origin master
+	----- 前提是 对应的 ssh-key 已经添加到 gitlab
+
+		git push -u origin master :
+	将本地的master分支推送到origin主机，同时指定origin为默认主机，
+	接下来后面就可以不加任何参数使用git push 了。
+	不带任何参数的git push，默认只推送当前分支，这叫做simple方式。
+	还有一种matching方式，会推送所有有对应的远程分支的本地分支。
+	git 现在默认是 simple方式。
+
+	生成ssh-key命令：ssh-keygen -t rsa -C "mutian_05@163.com"
+	$ git config --global user.name "John Doe"
+	$ git config --global user.email johndoe@example.com
+
+	git config --list  ----查看git config相关的设置
+
+	git branch --- 查看本地分支  -r -l 只查看本地或远程分支
+	git branch -vv（两个v） --- 能够看到本地分支跟踪的远程分支
+	git branch -a  --- 查看远程分支
+	git branch test --- 创建test分支
+	git checkout test --- 切换到test分支
+	git checkout -b dev -- 创建并切换到dev分支上
+	git branch -d test --- 删除本地test分支
+	git branch -r -d test --- 删除远程test分支(不太靠谱的命令)
+	git push -d origin test --- 删除远程test分支(靠谱的命令)，使用此命令要谨慎！！
+	git remote -v --- 查看远程仓库信息，本地默认是master,远程是 origin(源)
+	git push origin develop:develop --- 将本地develop分支推送到远程仓库中,同时远程仓库创建develop分支
+	git log --graph --pretty=online --abbrev -commit --- 查看分支合并
+	git merge dev  --- 把dev分支合并到当前分支
+	git remote update origin --prune  ---更新远程分支列表   prune [pru:n] 删除，减少
+	git ls-remote --显示远程的所有的分支
+
+	git -- tag相关操作:
+		git--tag分两种，轻量标签和附注标签，轻量标签是指向提交对象的引用，附注标签则是仓库中的一个独立对象
+		切换标签与切换分支相同 -- git checkout [tagname]
+	git tag v0.1 -- 创建轻量标签
+	git tag -a v0.1 -m "v0.1版本" -- 创建附注标签
+	git tag -d v0.1 -- 删除标签
+	git show [tagname] -- 查看标签信息
+	git tag -a v.. [commitId]  -- 补打标签
+	git tag  -- 查看当前分支下的标签
+	git checkout v0.21  -- 此时会指向打v0.21标签时的代码状态，(但现在处于一个空的分支上)
+	git tag -l ‘v0.1.*’ -- 搜索符合模式的tag
+
+	通常的git push不会将标签对象提交到git服务器，我们需要进行显式的操作：
+    git push origin v0.1.2 -- 将v0.1.2标签提交到git服务器
+    git push origin --tags -- 将本地所有标签一次性提交到git服务器
+
+	几个高逼格的git命令
+	git diff -- 查看所有本地文件的改动。只改动一个文件的话可以在命令后添加文件名
+	git log -- 查看所有提交历史。还可用于带有git log –p my_file 的文件，输入q退出
+	git blame my file -- 了解谁在什么时候对my_file做了什么样的改动
+	git reflog -- 显示本地代码库HEAD的更改日志。这个命令很适合查找丢失的工作
+
+
+
+
+Linux --- date 显示 习惯时间格式：
+	$ date '+%Y-%m-%d %H:%M:%S' -- 2018-09-23 09:34:23
+
+crontab -- 一些简单应用 crontab crond --定时任务
+	系统级任务调度配置文件  /etc/crontab  文件
+	用户级任务调度配置文件  /var/spool/cron 目录
+	每一行就是一个定时任务：6端设置
+	minute(0-59) hour(0-23) day(1-31) month(1-12) week(0-7) command(要执行的指令)
+
+查看系统上都有哪些软件源: 命令  ---# yum repolist
+
+nginx -- 一些操作命令：
+	1.	cd /usr/local/nginx/sbin/
+		./nginx
+		./nginx -s stop 强制kill掉进程
+		./nginx -s quit 平滑停机
+		./nginx -s reload 重新加载配置文件(相当于热部署)
+		对nginx进行重启相当于先停止再启动，即先执行停止命令再执行启动命令。如下：
+			./nginx -s quit
+			./nginx
+	2.重新加载配置文件：
+		当nginx的配置文件nginx.conf修改后，要想让配置生效需要重启nginx，
+		使用-s reload不用先停止nginx再启动nginx即可将配置信息在 nginx 中生效，如下：
+		./nginx -s reload
+
+	3.nginx -- 静态资源配置
+		指定文件的类型:
+		1. location ~ /(javascript|css|images) {
+	        root /Users/web;
+	    }
+
+	    指定文件的路径:
+	    2. location ^~ /MA/ {
+	        root /Users/web;
+	    }
+
+	    ~ 开头表示区分大小写的正则匹配，^非，= 开头表示精确匹配
+	    这里注意 使用 root和使用 alias的区别..
+
+
+    4.nginx --- 一个 http标签下 多个 server  --- 就是多个虚拟主机
+		配置文件打散 (多个位置可以使用 include指令，进行配置文件的打散)
+		nginx的root路径：
+		location /img/ { 
+		alias /var/www/image/; 
+		} 
+
+			若按照上述配置的话，则访问/img/目录里面的文件时，ningx会自动去/var/www/image/目录找文件
+			alias是一个目录别名的定义
+
+		location /img/ { 
+		root /var/www/image; 
+		} 
+
+			若按照这种配置的话，则访问/img/目录下的文件时，nginx会去/var/www/image/img/目录下找文件。
+			root则是最上层目录的定义。 
+		一直以为root是指的/var/www/image目录下，应该是/var/www/image/img/
+		还有一个重要的区别是alias后面必须要用“/”结束，否则会找不到文件的。。。而root则可有可无
+
+		反向代理：配置示例
+
+		server{
+		    listen 80;
+		    server_name miototest.miototech.com; #绑定域名
+		    #index index.htm index.html index.php index.jsp; #默认文件
+		    #root /usr/local/tomcat/webapps2/miotoServer-1.0-SNAPSHOT; #网站根目录
+		    #include location.conf; #调用其他规则，也可去除
+		        location / {
+		                proxy_pass http://localhost:8080/miotoServer-1.0-SNAPSHOT/;
+		                #proxy_pass http://localhost:9090/;
+		        }
+		        # 微服务接口
+		        location /v1/ {
+		                #proxy_pass http://localhost:8081/miotoServer-1.1-SNAPSHOT/v1/;
+            			proxy_pass http://localhost:9090/v1/;
+        		}
+        }
+
+    5.Nignx 请求的分发方式：
+		1.轮询 -- 把请求按时间顺序逐一分发到后台服务器，如果服务器down
+			掉，能自动剔除。
+		2.weight -- 权重，指定轮询的几率，weight和访问比率成正比，用于
+			后台服务器性能不均的情况。
+		3.ip_hash -- 每个请求按ip的hash结果来分配，这样每个访客固定访问
+			一个后端服务器，可以解决session的问题。
+		4.fair(第三方)，按服务器的响应时间来分配，响应时间短的优先分配
+			fair -- 公平的，公正的，合理的。 
+		5.url_hash(第三方)，按每个访问url的hash结果来分发，使相同的url
+			定向到同一台服务器，后端服务器为缓存是比较有用。
+
+
+权限设计经典：5张表
+	1.用户表
+	2.角色表
+	3.资源列表（菜单表）
+	4.用户角色表
+	5.角色菜单表
+
+查看系统的版本：centos
+	cat /etc/redhat-release
+
+查看系统健康状态命令：
+	top 
+	vmstat 2 3
+	uptime
+	free
+	w
+
+uname -- 
+	-a或--all：显示全部的信息；
+	-m或--machine：显示电脑类型；
+	-n或-nodename：显示在网络上的主机名称；等价于command: hostname
+	-r或--release：显示操作系统的发行编号；
+	-s或--sysname：显示操作系统名称；
+	-v：显示操作系统的版本；
+
+	查看系统是哪个版本：
+		cat /proc/version
+		cat /etc/redhat-release
+		cat /etc/issue
+	查看是32位还是64位:
+		file /bin/ls 
+
+linux-服务器查看内网和外网IP命令
+	etho inet   ifconfig
+	外网  curl ifconfig.me
+
+
+mysql -- 主从复制涉及到的相关命令
+	锁表 -- flush tables with read lock;
+			show master status; 
+			查看 position 和 file相关
+	解锁表 -- unlock tables;
+
+
+centos7上，卸载系统自带的openjdk,安装jdk1.8(现在是oracle公司)
+	step-1 # rpm -qa | grep java 
+	step-2 # rpm -e --nodeps java-1.8.0-openjdk-1.8.0.102-4.b14.el7.x86_64 
+	...
+	....
+	step-n # tar -zxvf jdk-8u11-linux-x64.tar.gz
+	mv 复杂的目录名  简洁的目录名称
+
+	配置环境变量:
+		export JAVA_HOME=/home/java/jdk1.8.0_11
+		export CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+		export PATH=$PATH:$JAVA_HOME/bin
+
+		使上面的配置生效：
+			. /etc/profile
+			source /etc/profile
+	# java -version   检验是否安装配置成功
+
+
+	shell脚本中：
+		判断一个进程是否存在
+		ps aux | grep -w 'hello' | grep -v 'grep' | awk '{print $2}' 
+		echo $?  -- 执行
+			如果hello进程存在  则结果为 0    --- pid存在
+			如果hello进程不存在  则结果为 1  --- pid不存在
+
+
+		shell脚本中 分号 “；” 和换行都是来断句的 -- 分隔语句
+
+
+查看一个用户所属的组及相关gid信息：
+	
+	id --- 显示用户的相关信息
+		option 
+		-g  基本组ID
+		-G  所有组ID
+		-n  与其他选项组合使用，显示名称而不是显示ID
+
+	id wwei  -- id 命令   wwei --用户名
+	id -G wwei --查看用户wwei所属组(包括基本组和附加组)的组ID
+	id -nG wwei --查看用户wwei所属组(包括基本组和附加组)的组名称
+
+	groups --查看当前登陆用户所属的组的名称
+	cat /etc/group | grep 'username'
+
+	查询一个组里有那些用户:
+
+		awk -F":" '{print $1"/t/t"$4}' /etc/passwd | grep '1003'
+
+	每个用户有且仅有一个主组，但可以有0个或多个附加组 -- 类比现实生活
+
+
+授权相关命令：
+
+	chmod a=rwx file  --和-- chmod 777 file 效果相同 
+	chmod ug=rwx,o=x file  --和-- chmod 771 file 
+	chmod -R 755 /home :  u -user  g -group o -other  <==> a
+	chmod a+x /home
+	chmod a=rwx
+
+实时查看服务器日志： ------------------------->
+	1.切换到  tomcat/logs/   下
+	2.tail -f catalina.out  命令，这里的 -f 是 follow的意思，输出文件的增量...
+	3.Ctrl+c 是退出tail命令
+	Example: tail -10f catalina.out   --> 实时刷新查看
+	过滤：tail -f filename | grep 'keyword'
+
+	系统中tomcat启动可能会占用好几个端口,8080,8009,8005
+	查询步骤:
+		jps / ss -tnlp
+		netstat -anp | grep port   ----> pid
+		ps aux | grep  pid
+
+linux -- 2个命令:
+	df -h --检查文件系统的磁盘空间占用情况
+	du -h --显示目录的磁盘使用情况
+		du -sh ./  -- 查看当前目录的大小
+		参数说明：
+		-s或--summarize 仅显示总计，只列出最后加总的值
+		-h或--human-readable 以K，M，G为单位，提高信息的可读性
+		--exclude=<目录或文件> 略过指定的目录或文件
+
+   当前目录的大小：
+　　du -sh .
+　　当前目录下个文件或目录的大小： 
+　　du -sh *
+　　显示前10个占用空间最大的文件或目录：
+　　du -s * | sort -nr | head
+
+
+	/bin/sh -c  
+        -c string：命令从-c后的字符串读取
+
+    wc:将计算指定文件的行数、字数，以及字节数
+    -l -- 只显示行数
+    -w -- 只显示字数
+    -c -- 只显示字节数
+
+
+watch -- 定期执行指定的程序并将结果全屏输出
+	Example: watch date  -- 自己看效果
+	options: --
+		-n (interval): 重复执行命令的时间间隔，默认是2.0s
+		watch -n 5 date --没5秒钟执行一次date命令
+		-d: 高亮显示差异部分
+		watch -n 5 -d date
+		-g: / --chgexit 发现结果有改变时退出循环执行
+		watch -g free
+		-t: 关闭title
+
+总结一些查询端口相关信息的命令:
+	Socket Statistics === 套接字统计
+	1. ss - tnlp  -- 显示本地打开的端口信息
+	   options: --
+	   t -- tcp 显示 tcp socket
+	   n -- 不解析服务名
+	   l -- 显示端口
+	   p -- 每个进程(process)相关信息
+	   a -- 显示所有套接字信息
+
+	Process Status === 进程状态
+    2. px aux -- 显示所有包含其他使用者的进程
+       options: -- 
+       a -- 显示现行终端机下的所有程序，包括其他用户的程序
+       u -- 以用户为主的格式来显示程序状况
+       x -- 显示所有程序，不以终端机来区分
+
+    list open files
+    3. lsof -i port -- 查看端口使用情况
+
+
+使用ssh免密登录服务器:
+	命令: 
+	ssh-keygen -t rsa  一路回车 -- 直接OK 
+	scp ~/.ssh/id_rsa.pub wwei@39.105.135.200:/home/wwei/.ssh/authorized_keys
+		这里的39.96.91.236是要通过ssh登录的服务器ip
+	重要提示: 目标服务器的 .ssh/authorized_keys
+		1. .ssh 目录的权限 -- 700
+		2. authorized_keys的权限 -- 600
+
+		usermod  -l  wwei  -d  /home/wwei  -m  deployment
+
+
+less -- 命令翻页功能，能上下翻页
+	空格 or pageDown -- 向下翻动一页
+	pageUp --向上翻动一页
+
+more -- 从第一行开始显示
+	空格键 -- 查看下一屏
+	b键 -- 向上翻一屏
+	q键 -- 退出
+	回车 -- 向下滚动一行
+	more默认从第一行开始显示，但是要想从第100行开始显示怎么办？
+	more +100 file_name 
+	每次只显示10行怎么办？
+	more -10 file_name，这样的话，第一次显示10行，按下空格键，右显示10行，20行都在一屏上
+	如果，一屏只显示10行，怎么办
+	more -10 -c file_name
+
+ls -- 命令高级用法案例
+	ls -lR ./   -- 列出当前目录下所有文件以及目录的详细信息
+	ls -l abc*  -- 列出当前目录下所有以abc开头的文件的详细信息
+	ls -F       -- 表示在每个文件名后附上一个字符来表示该文件的类型
+				具体说明: * - 表示可以执行的普通文件
+						 / - 表示目录
+						 @ - 表示符号链接
+						 | - 表示
+						 = - 表示套接字
+						 ...
+	ls -F /home/wwei | grep /$  -- 这里/$是一个正则表达式，表示以/结尾，也就是目录，自己试下这个命令
+		这里命令的作用: 只列出目录下的子目录
+		1. ls -aF /home/wwei | grep /$
+		2. ls -ap /home/wwei | grep /$  -- 这里的 -p与-F类似
+		3. ls -la /home/wwei | grep "^d" 
+		4. ls -d */   -- -d表示将目录像文件一样显示，而不显示其下的文件 -- 此命令不能显示隐藏目录
+
+	ls -ltr -- 按时间顺序列出目录下的文件，正序
+	   -t -- 以文件的修改时间顺序，越新越靠前，倒序展示
+	   -r -- 对结果进行反向排序
+	   options-组合起来就是命令的功能
+
+   ls -lhS -- 按文件的大小排序
+
+   ls -l | grep "^-" | wc -l  -- 统计当前目录下 文件的数量
+   ls -l | grep "^d" | wc -l  -- 统计当前目录下 目录的数量
+
+   ls | sed "s:^:`pwd`/:"     -- 列出所有文件的绝对路径，这个不是很理解偶
+
+Alibaba -- Arthas 使用心得
+ 
+ 1. 安装略过...
+ 2. 一些command 
+ 	dashboard -- 展示当前进程的信息  ctrl+c -- stop
+ 	thread -- 查看线程的堆栈信息
+ 		-n 置顶当前最忙的前几个线程并打印堆栈信息 example: thread -n 3
+ 		-b 找出当前阻塞其他线程的线程 -- （找出获取锁的那个线程), 只支持synchronized关键字阻塞住的线程
+ 		-i 指定采样的时间间隔，单位毫秒
+ 	watch -- 方法执行数据监测
+ 		4个观察事件点，即 -b 方法调用前，-e 方法异常后，-s 方法返回后，-f 方法结束后，默认是 -f
+ 		class-pattern -- 类名表达式匹配
+ 		method-pattern -- 方法名表达式匹配
+ 		express -- 观察表达式
+ 		-x 结果的遍历深度
+ 		Example: watch -f com.test.somework.controller.TestController.Acontroller  methodName 
+ 					returnobj -x 2
+
+		一个终极的例子:
+		watch -f com.test.controller.TestController method_name {params,returnobj} -x 3
+
+		jvm  -- 查看当前jvm的信息
+		sysprop -- 查看修改当前jvm的属性
+		monitor -- 对匹配 class-pattern／method-pattern的类的方法的调用进行监控
+			-c 统计周期，默认是120s，monitor是一个非实时返回的命令
+			monitor -c 5 com.test.controller.TestController getTest 
+
+		stack -- 输出当前方法被调用的路径，一个方法被执行，路径可能有很多，你不知道方法是在哪里执行的
+			stack com.test.controller.TestController getTest
+
+		trace -- 输出当前方法的调用链路，似乎只能输出一级的链路....
+			用法雷同 stack命令
+
+		观察方法的调用信息	
+		tt -t -n 3 com.test.controller.TestController getTest
+			-t 记录方法的每次执行情况
+			-n 记录方法的执行次数
+			-s 方法名字匹配,查询之前的记录
+			example: tt -s 'method.name == "getsomexxx"'
+		tt ==== TimeTunnel 时间隧道
+
+mysql -- 服务器上用到的一些命令
+    1. show engines \G;   -- 查看支持的存储引擎
+	2. show databases;    -- 显示所有数据库
+	3. use database-name  -- change database 切换数据库
+	4. show tables;    -- 显示某一个数据库中的所有表
+	5. show variables like '%storage_engine%';  -- 查看默认的存储引擎
+	6. describe table-name;  -- 显示表结构
+
+
+一些组合命令：
+	查看你最常用的10个命令
+	cat .bash_history | sort | uniq -c | sort -rn | head -n 10
+	cat .zhistory | sort | uniq -c | sort -rn | head -n 10
+	查看连接你服务器top10用户端的IP地址：
+	netstat -nat | awk '{print $5}' | awk -F ':' '{print $1}' | sort | uniq -c | sort -rn | head -n 10
+
+	zookeeper一些运维命令:
+	输出server的详细配置信息 -- echo conf | nc localhost 2181
+	功能性命令，重置所有连接的统计信息 -- echo crst | nc localhost 2181
+	输出server简要状态和连接的客户端信息 -- echo stat | nc localhost 2181
+	输出一些zookeeper运行时信息 -- echo mntr | nc localhost 2181
+	出所有watcher信息，以watcher的session为归组单元排列，列出该会话订阅了哪些path
+	-- echo wchc | nc localhost 2181
+
+nc命令解析：
+	nc是什么？nc是NetCat的缩写，在网络工具中有瑞士军刀美誉，nc的作用：
+		实现任意TCP/UDP端口的侦听，nc可以作为server以TCP或UDP方式侦听指定端口
+		端口的扫描，nc可以作为client发起TCP或UDP连接
+		机器之间传输文件
+		机器之间网络测速 
+	常用的参数选项 ---
+		-l -- 用于指定nc将处于侦听模式。指定该参数，则意味着nc被当作server，侦听并接受连接
+		而非向其它地址发起连接
+		example: nc -l 9999 --启动一个tcp的监听，执行命令的服务器作为一个server并且监听9999这个端口
+				 另一台服务器，可以使用command: telnet ip 9999
+				 也可以是用command: nc -vw 2 ip 9999
+				 两台服务器之间可以进行通讯，回话，聊天等		 
+
+		-s -- 指定发送数据的源IP地址，适用于多网卡机
+		-u -- 指定nc使用UDP协议，默认为TCP
+		-v -- 输出交互或出错信息，新手调试时尤为有用
+		-z -- 表示zero，表示扫描时不发送任何数据
+		-w -- 表示连接超时时间(秒)，后面跟时间
+
+	nc可以扫描连续的端口，这个作用非常重要，常常可以用来扫描服务器端口，然后给服务器安全加固
+	example: 在A机器上监听2个端口，一个9999，一个9998，使用&符号丢入后台
+			 command: nc -l 9998 &
+			 command: nc -l 9999 &
+			 在客户端B机器上扫描连续的两个端口，如下
+			 command: nc -vw 2 ip 9998-9999
+
+	nc可以传输文件，方法很多，举一个例子:
+	example:先在B机器上启动一个接收文件的监听
+			command: nc -l 9995 > xxx.file   -- 来自9995端口接受到的数据都在写在file中，名字随意
+			在A机器上往B机器的9995端口发送数据
+			command: nc ip 9995 < xxx.file
+			B机器接收完毕，它会自动退出监听
+
+	
+telnet -- 命令
+	telnet就是查看某一个端口是否可以访问、是一种通信协议、是TCP/IP协议家族中的一员
+	① ping + ip： 查看某一个ip地址是否能够连通，如： ping 114.80.67.193
+	② telnet ip port ： 查看某一个机器上的某一个端口是否可以访问，如：telnet 114.80.67.193 8080
+	telnet可以接受一些其他的命令
+	Example: telnet 127.0.0.1 2181   .... after then ...使用命令: stat
+
+	source filename与sh filename及./filename执行脚本的区别在那里呢？
+	1.当shell脚本具有可执行权限时，用sh filename与./filename执行脚本是没有区别得
+	./filename是因为当前目录没有在PATH中，所有"."是用来表示当前目录的
+	2.sh filename重新建立一个子shell，在子shell中执行脚本里面的语句，该子shell继承父shell的环境变量
+	但子shell新建的、改变的变量不会被带回父shell，除非使用export
+	3.source filename这个命令其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell
+	那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面
+
+ssh命令的妙用
+	Secure Shell缩写是SSH，由IETF的网络工作小组（Network Working Group）所制定，SSH是一项创建在应用层和传输层基础上的安全协议
+	为计算机的shell提供安全的传输和使用环境
+
+	1、command: ssh 192.168.0.116  -- 使用默认当前登录用户进行连接，第一次连接的时候，SSH 会确认目标主机的真实性
+	如果没有问题的话，输入yes即可。如果我们想以指定的用户名来登录主机，有两种方法
+		ssh -l name 192.168.0.116
+		ssh name@192.168.0.116
+	2、ssh默认使用22端口，如果要使用其他的端口可以加-p选项
+	    ssh 192.168.0.116 -p 1234
+		引申话题：如何修改端口号？只需修改/etc/ssh/ssh_config，修改：Port 22
+	3、使用 -C 选项，所有通过SSH发送或接收的数据将会被压缩，并且任然是加密的
+		ssh -C 192.168.0.116
+	4、使用 -v选项，打开调试模式
+		ssh -v 192.168.0.116
+	5、使用 -b选项绑定源地址
+		ssh -b 192.168.0.105 pi@192.168.0.116
+	6、远程执行命令
+		ssh pi@192.168.0.116 ls -l
+	7、另外一个很赞的基于SSH的工具叫sshfs，sshfs可以让你在本地直接挂载远程主机的文件系统。它的使用格式如下
+		sshfs -o idmap=user user@hostname:/home/user ~/Remote
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,246 @@
+                                 kafka---总览
+
+Apache kafka是消息中间件的一种，kafka是用于构建实时数据管道和流应用程序
+具有横向扩展，容错，wicked fast（变态快）等优点
+Kafka比别的系统的优势是它是一个非常高性能的存储系统
+写入到kafka的数据将写到磁盘并复制到集群中保证容错性
+并允许生产者等待消息应答，直到消息完全写入
+仅仅读，写和存储是不够的，kafka的目标是实时的流处理
+
+一个很好的比喻，鸡下鸡蛋，人吃鸡蛋，为避免浪费，准备一个篮子装鸡蛋，鸡下的鸡蛋放到篮子里，
+人到篮子里拿鸡蛋吃，而kafka就是这个篮子....
+
+partition -- topic分区:
+每一个分区都是一个顺序的、不可变的消息队列，并且可以持续的添加
+分区中的消息都被分了一个序列号，称之为偏移量(offset)，在每个分区中此偏移量都是唯一的
+
+每个分区有一个leader，零或多个follower。Leader处理此分区的所有的读写请求，
+而follower被动的复制数据。如果leader宕机，其它的一个follower会被推举为新的leader
+这样可以平衡负载，避免所有的请求都只让一台或者某几台服务器处理
+
+Kafka中采用分区的设计有几个目的:
+一，可以处理更多的消息，不受单台服务器的限制
+Topic拥有多个分区意味着它可以不受限的处理更多的数据
+二，分区可以作为并行处理的单元
+
+Geo-Replication(异地数据同步技术)
+
+
+
+1. 将消息以topic为单位进行归纳 （可以理解为一个抽象或是逻辑概念）
+topic -- 主题，话题，论题的意思，一个topic是对一组消息的归纳，
+kafka只有topic的概念，一个topic可以有若干个分区，分区可以动态的修改，只能增加不能减少
+一个分区(partition)内的消息是有序的，各个分区之间的消息是无序的，消息以追加的方式写入
+这里有个概念，顺序写入磁盘的速度快于随机写入内存的顺序？
+无论如何，kafka会持久化保存所有消息，无论它们是否已经被消费，用户可以配置相关的策略
+
+2. 将向topic发布消息的程序称之为producer，producer -- 生产者
+生产者往某个Topic上发布消息。生产者也负责选择发布到Topic上的哪一个分区。最简单的方式从分区列表中轮流选择。也可以根据某种算法依照权重选择分区。开发者负责如何选择分区的算法
+
+3. 将预定topic并消费消息的程序称之为consumer，consumer -- 消费者
+通常来讲，消息模型可以分为两种， 队列和发布-订阅式。 队列的处理方式是 一组消费者从服务器读取消息，一条消息只有其中的一个消费者来处理。在发布-订阅模型中，消息被广播给所有的消费者，接收到消息的消费者都可以处理此消息
+Kafka为这两种模型提供了单一的消费者抽象模型： 消费者组 (consumer group) 消费者用一个消费者组名标记自己
+一个发布在Topic上消息被分发给此消费者组中的一个消费者 假如所有的消费者都在一个组中，那么这就变成了queue模型 假如所有的消费者都在不同的组中，那么就完全变成了发布-订阅模型
+
+4. kafka以集群方式运行，可以有一个或多个服务，每个服务称为一个broker，broker ['brəukə] 经纪人，代理人，中间人
+5. 客户端与服务端通过tcp协议进行通讯
+6. kafka的性能是与数据量无关的常量级别的，所以保留太多的数据并不是问题
+7. kafka的消息被消费后，并不会消失，默认存储7天
+
+
+kafka 安装启动:
+	1. 需要 zookeeper，如果没有，使用 kafka自己组装的
+	$ bin/zookeeper-server-start.sh config/zookeeper.properties
+	2. 启动kafka
+	$ bin/kafka-server-start.sh config/server.properties
+	一般会报jvm内存不足的错误
+		resolve --
+		编辑bin/kafka-server-start.sh
+		修改
+		export KAFKA_HEAP_OPTS="-Xmx1G -Xms1G"
+		为export KAFKA_HEAP_OPTS="-Xmx256M -Xms128M"
+
+	3. 创建一个topic(test)，只有一个分区和一个备份
+	$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
+	创建好之后可以使用命令查看：
+	$ bin/kafka-topics.sh --list --zookeeper localhost:2181
+	除了手工创建topic外，你也可以配置你的broker，当发布一个不存在的topic时自动创建topic
+	4. 运行producer脚本，发送几条消息到到服务器
+	$ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+	> This is a message
+	> This is another message
+	5. 运行consumer脚本，消费消息
+	$ bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+	This is message
+	This is another message
+	开启两个终端，生产者生产消息，消费者同时能消费消息
+
+	6. 设置多个broker集群:
+	$ cp config/server.properties config/server-1.properties
+	...
+
+	编辑配置文件:
+	config/server-1.properties: 
+    broker.id=1 
+    listeners=PLAINTEXT://:9093 
+    log.dir=/tmp/kafka-logs-1
+	broker.id是集群中每个节点的唯一且永久的名称，我们修改端口和日志目录是因为我们现在在同一台机器上运行
+
+	现在，我们创建一个新topic，把备份设置为：2
+	$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 2 --partitions 1 --topic my-replication-test
+
+	好了，现在我们有了一个集群，我们怎么知道每个集群在做什么呢？运行命令“describe topics”
+	$ bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic my-replicated-topic
+
+	console-output:
+	Topic:my-replicated-topic    PartitionCount:1    ReplicationFactor:2    Configs:
+	Topic: my-replicated-topic    Partition: 0    Leader: 0    Replicas: 1,0 Isr: 0,1
+
+	输出解释：第一行是所有分区的摘要，其次，每一行提供一个分区信息，因为我们只有一个分区，所以只有一行。
+	"leader"：该节点负责该分区的所有的读和写，每个节点的leader都是随机选择的。
+	"replicas"：备份的节点列表，无论该节点是否是leader或者目前是否还活着，只是显示。
+	"isr"：“同步备份”的节点列表，也就是活着的节点并且正在同步leader
+
+	这里的节点---指代一个broker，一个kafka实例
+	我们要测试集群的容错，kill掉leader，Broker0作为当前的leader，也就是kill掉Broker0
+	$ ps aux | grep 'server-1.properties'
+	$ kill -9 pid
+
+	$ bin/kafka-topic.sh --describe --zookeeper localhost:2181 --topic my-replication-topic
+	备份节点之一成为新的leader，而broker1已经不在同步备份集合里了
+
+	但是消息仍然没有丢....
+
+	7. 使用Kafka Connect来导入/导出数据:
+	从控制台写入和写回数据是一个方便的开始，但你可能想要从其他来源导入或导出数据到其他系统对于大多数系统，可以使用kafka Connect，而不需要编写自定义集成代码
+	kafka Connect是运行在独立的模式下，这意味着它们运行在一个单一的，本地的，专用的进程
+	这里启动 connect-standalone.sh脚本，可能会出现jvm内存不足的情况：
+	resolve -- vim 修改启动脚本的 Xms -Xmx参数
+
+	$ bin/connect-standalone.sh config/connect-standalone.properties config/connect-file-source.properties config/connect-file-sink.properties
+
+	这里暂时启动报错，启动不了.....//TODO
+
+	8. kafka的使用场景:
+	消息，网站活动追踪，指标，日志聚合，流处理，事件采集，提交日志
+
+	9. 概念类
+	kafka作为一个集群运行在一个或多个服务器上。
+	kafka集群存储的消息是以topic为类别记录的。
+	每个消息（也叫记录record，我习惯叫消息）是由一个key，一个value和时间戳构成
+	client和Server之间的通讯，是通过一条简单、高性能并且和开发语言无关的TCP协议
+	消费者可以订阅一个或多个主题（topic），并从Broker拉数据，从而消费这些已发布的消息
+	kafka可以修改删除topic,但是partition和repication不支持减少和修改
+
+
+
+			RabbitMq --- 相关东西
+
+RabbitMQ是一个由erlang开发的AMQP（Advanced Message Queue Protocol）的开源实现，即一个消息队列，主要是用来实现应用程序的异步和解耦，同时也能起到消息缓冲，消息分发的作用
+一个Message有两个部分：payload（有效载荷）和label（标签）。payload顾名思义就是传输的数据。label是exchange的名字或者说是一个tag，它描述了payload，而且RabbitMQ也是通过这个label来决定把这个Message发给哪个Consumer。AMQP仅仅描述了label，而RabbitMQ决定了如何使用这个label的规则
+对于一个数据从Producer到Consumer的正确传递，还有三个概念需要明确：exchanges, queues and bindings
+ Exchanges are where producers publish their messages.
+ Queues are where the messages end up and are received by consumers
+ Bindings are how the messages get routed from the exchange to particular queues.
+
+virtual-host:理解
+虚拟主机：一个虚拟主机持有一组交换机、队列和绑定。为什么需要多个虚拟主机呢？很简单，RabbitMQ当中，用户只能在虚拟主机的粒度进行权限控制。 因此，如果需要禁止A组访问B组的交换机/队列/绑定，必须为A和B分别创建一个虚拟主机。每一个RabbitMQ服务器都有一个默认的虚拟主机“/”
+每个VirtualHost相当于一个相对独立的RabbitMQ服务器，每个VirtualHost之间是相互隔离的。exchange、queue、message不能互通，相当于mysql的db
+
+1. @RabbitListener 作用：
+   用在方法上：指定目标方法来作为消费消息的方法，通过注解参数指定所监听的队列或者Binding
+   //支持自动声明绑定，声明之后自动监听队列的队列，此时@RabbitListener注解的queue和bindings不能同时指定，否则报错
+   @RabbitListener(bindings ={@QueueBinding(value = @Queue(value = "q5",durable = "true"),
+            exchange =@Exchange(value = "zhihao.miao.exchange",durable = "true"),key = "welcome")})
+
+   用在类上：配合@RabbitHandler使用，标注在类上面表示当有收到消息的时候，就交给带有@RabbitHandler的方法处理，具体找哪个方法处理，需要跟进MessageConverter转换后的java对象
+
+   @Payload和@Header注解：
+		@Component
+		public class MessageHandler {
+		    //获取消息的头属性和body属性
+		    @RabbitListener(queues = "zhihao.miao.order")
+		    public void handleMessage(@Payload String body, @Headers Map<String,Object> headers){
+		        System.out.println("====消费消息===handleMessage");
+		        System.out.println(headers);
+		        System.out.println(body);
+		    }
+		}
+
+总结
+如果消息属性中没有指定content_type，则接收消息的处理方法接收类型是byte[],如果消息属性中指定content_type为text，则接收消息的处理方法的参数类型是String类型。不管有没有指定content_type，处理消息方法的参数类型是Message都不会报错
+
+Message durability消息持久化
+	为了保证在RabbitMQ退出或者crash了数据仍没有丢失，需要将queue和Message都要持久化
+	再次强调，Producer和Consumer都应该去创建这个queue，尽管只有一个地方的创建是真正起作用的
+
+因为我们采用no-ack的方式进行确认，也就是说，每次Consumer接到数据后，而不管是否处理完成，RabbitMQ Server会立即把这个Message标记为完成，然后从queue中删除了。如果一个Consumer异常退出了，它处理的数据能够被另外的Consumer处理，这样数据在这种情况下就不会丢失了，注意是这种情况下
+为了保证数据不被丢失，RabbitMQ支持消息确认机制，即acknowledgments，如果Consumer退出了但是没有发送ack，那么RabbitMQ就会把这个Message发送到下一个Consumer。这样就保证了在Consumer异常退出的情况下数据也不会丢失
+这里并没有用到超时机制。RabbitMQ仅仅通过Consumer的连接中断来确认该Message并没有被正确处理也就是说，RabbitMQ给了Consumer足够长的时间来做数据处理
+
+RabbitMQ的Messaging Model就是Producer并不会直接发送Message到queue。实际上，Producer并不知道它发送的Message是否已经到达queue
+Producer发送的Message实际上是发到了Exchange中。它的功能也很简单：从Producer接收Message，然后投递到queue中。Exchange需要知道如何处理Message，是把它放到那个queue中，还是放到多个queue中？这个rule是通过Exchange的类型定义的(direct,topic,fanout)
+
+Bingings(exchange与queue进行绑定)，也就是交换机需要和队列相绑定，两者之间是多对多的关系
+routing-key：这里的routing-key可以理解为queue的名字？
+一个exchange可以绑定多个queue，一个exchange与queue之间可以有多条bingings就是有多个binging-key也就是routing-key，多个queue绑定同一个key是可以的
+没有目标(binging-key)的消息会被丢弃
+
+Topic-Exchange:
+对于Message的routing_key是有限制的，不能是任意的。格式是以点号“."分割的字符表，比如："stock.usd.nyse", "nyse.vmw"，你可以放任意的key在routing_key中，当然最长不能超过255bytes
+对于routing_key，有两个特殊字符（在正则表达式里叫元字符）
+	.* (星号) 代表任意一个单词
+	.# (井号) 0个或者多个单词
+如果binding_key 是 "#" - 它会接收所有的Message，不管routing_key是什么，就像是fanout exchange
+如果 "*" (star) and "#"(井号)有被使用，那么topic exchange就变成了direct exchange
+
+Exchange用于转发消息，但是它不会做存储，如果没有Queue bind到Exchange的话，它会直接丢弃掉 Producer发送过来的消息
+交换机(Exchange)
+交换机的功能主要是接收消息并且转发到绑定的队列，交换机不存储消息，在启用ack模式后，交换机找不到队列会返回错误。交换机有四种类型：Direct, topic, Headers and Fanout
+
+Direct：direct 类型的行为是"先匹配, 再投送". 即在绑定时设定一个routing_key,消息的routing_key 匹配时, 才会被交换器投送到绑定的队列中去，rabbitmq默认的交换机就是direct类型的
+
+Topic：按规则转发消息（最灵活）
+
+Headers：设置header attribute参数类型的交换机
+
+Fanout：转发消息到所有绑定队列
+
+
+Netty一些相关的东西：
+	Netty是由JBOSS提供的一个java开源框架，['neti] 网状的
+	三大优点，并发高，传输快，封装好..
+	Channel-数据传输流，相关的概念有4个
+	1. Channel，表示一个连接，可以理解为每一个请求，就是一个Channel
+	2. ChannelHandler，处理核心业务，用于处理业务请求
+	   分为ChannelInboundHandler和ChannelOutboundHandler
+	   ChannelInboundHandler -- 输入数据处理器
+	   ChannelOutboundHandler -- 输出数据处理器
+	3. ChannelHandlerContext，用于传输业务数据
+	4. ChannelPipeLine，用于保存处理过程需要用到的ChannelHandler和ChannelHandlerContext
+
+	ByteBuf: 是一个存储字节的容器，最大的好处就是使用方便，它既有自己的读索引和写索引，方便你对整段字节缓存进行读写，也支持get/set，方便你对其中每一个字节进行读写
+
+	Codec
+	Netty中的编码，解码器，通过他你能完成字节与pojo、pojo与pojo的相互转换，从而达到自定义协议的目的。在Netty里面最有名的就是HttpRequestDecoder和HttpResponseEncoder了
+
+
+
+
+mmap -- 相关概念
+mmap是一种内存映射文件的方法，即将一个文件或者其它对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间
+中一段虚拟地址的一一对映关系。实现这样的映射关系后，进程就可以采用指针的方式读写操作这一段内存，而系统会自动回写
+脏页面到对应的文件磁盘上，即完成了对文件的操作而不必再调用read,write等系统调用函数。相反，内核空间对这段区域的修
+改也直接反映用户空间，从而可以实现不同进程间的文件共享
+
+一脸懵懂....
+
+
+
+
+
+
+
+
+
+
