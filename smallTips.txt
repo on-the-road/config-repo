@@ -607,11 +607,15 @@ Future:类型作用, Future是一个接口
 	 FileChannel: 存在于java.nio包中
 	 MMAP: MappedByteBuffer...
 
-126. 怎么理解延迟(latency)和吞吐量(throughput)
-	 latency -- 延迟测量的是每个应用程序感受到的时间长短
-	 throughput -- 吞吐量测量的是整个系统的处理效率
-	 这是两个不同的概念和目标...
-	 响应时间(RT)
+126.怎么理解延迟(latency)和吞吐量(throughput)
+	latency -- 延迟测量的是每个应用程序感受到的时间长短
+	throughput -- 吞吐量测量的是整个系统的处理效率
+	这是两个不同的概念和目标...
+	响应时间(RT)
+
+	为什么要分别考量？就是个rt问题，一条马路，2个车道，并发最高就只能为2。但是吞吐量呢，表示一段时间内通过的车辆数
+	如果2个车道都被堵住了，rt很大，那么并发为2，吞吐量为0；如果没有堵车，通过很快，rt很低，吞吐量就很高
+	所以，还是看rt
 
 127. 什么是人工智能(Artificial Intelligence)
 	 人工智能的分级:

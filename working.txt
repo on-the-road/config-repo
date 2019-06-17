@@ -222,3 +222,12 @@ as.sh  helloworld.txt  logs  __MACOSX  OtherTestCase.class  pixel-ai-dev  testDo
 
 
 newtt -- 1.前端需要传递   projectId  userId 尺寸信息
+
+
+The Hystrix timeout of 250000ms for the command pixel-design is set lower 
+than the combination of the Ribbon read and connect timeout, 480000ms.
+
+hystrix.command.default.execution.isolation.strategy=SEMAPHORE
+# 核心的两个设置，允许并发量1000的请求，默认情况下下面两个值都是10，也就是超过10个的并发会直接进入fallback方法，不会去真正请求
+hystrix.command.default.execution.isolation.semaphore.maxConcurrentRequests=1000
+hystrix.command.default.fallback.isolation.semaphore.maxConcurrentRequests=1000
