@@ -235,6 +235,67 @@ mmap是一种内存映射文件的方法，即将一个文件或者其它对象�
 
 一脸懵懂....
 
+--- ElasticSearch ---
+
+开源的Elasticsearch（以下简称 Elastic）是目前全文搜索引擎的首选，它可以快速地储存、搜索和分析海量数据
+Elastic的底层是开源库Lucene，Elastic是Lucene的封装，提供了REST API的操作接口，开箱即用
+Elasticsearch使用Java开发并使用Lucene作为其核心来实现所有索引和搜索的功能，但是它的目的是通过简单的RESTful API
+来隐藏Lucene的复杂性，从而让全文搜索变得简单。无论在开源还是专有领域，Lucene可以被认为是迄今为止最先进、性能最好的
+功能最全的搜索引擎库。但是，Lucene只是一个库。想要使用它，你必须使用Java来作为开发语言并将其直接集成到你的应用中
+更糟糕的是，Lucene非常复杂，你需要深入了解检索的相关知识来理解它是如何工作的
+
+Elasticsearch是面向文档(document oriented)的，这意味着它可以存储整个对象或文档(document)。然而它不仅仅是存储
+还会索引(index)每个文档的内容使之可以被搜索，在Elasticsearch中，你可以对文档（而非数据库中的行或列）进行索引、搜索、排序、过滤
+
+node与cluster，节点与集群的概念
+Elastic本质上是一个分布式数据库，允许多台服务器协同工作，每台服务器可以运行多个Elastic实例
+单个Elastic实例称为一个节点（node）。一组节点构成一个集群（cluster）
+
+Index、索引的概念
+Elastic会索引所有字段，经过处理后写入一个反向索引(Inverted Index)。查找数据的时候，直接查找该反向索引
+所以，Elastic数据管理的顶层单位就叫做Index(索引)。它是单个数据库的同义词。每个Index（关系型数据库中的数据库）的名字必须是小写
+在Elasticsearch中存储数据的行为叫做索引(indexing，注意这里是动词)。下面的命令可以查看当前节点的所有Index
+$ curl -X GET 'http://localhost:9200/_cat/indices?v' -- 暂时没有打印出数据
+
+Document，文档
+Index里面单条的记录称为Document、文档。许多条Document构成了一个Index，Document使用JSON格式表示
+下面是一个例子
+{
+  "user": "张三","title": "工程师","desc": "数据库管理"
+}
+同一个Index里面的Document，不要求有相同的结构（scheme），但是最好保持相同，这样有利于提高搜索效率
+Document相当于关系型数据库中的一行，默认情况下，文档中的所有字段都会被索引（拥有一个倒排索引），只有这样他们才是可被搜索的
+文档中的字段相当于关系型数据库中的列
+
+Type、分组 -- 可以理解为关系型数据库中的表（table）
+Document可以分组，比如weather这个Index里面，可以按城市分组（北京和上海），也可以按气候分组（晴天和雨天）
+这种分组就叫做Type，它是虚拟的逻辑分组，用来过滤Document。不同的Type应该有相似的结构（schema），举例来说
+id字段不能在这个组是字符串，在另一个组是数值。这是与关系型数据库的表的一个区别。性质完全不同的数据（比如products和logs）
+应该存成两个Index，而不是一个Index里面的两个Type（虽然可以做到），下面的命令可以列出每个Index所包含的Type
+$ curl 'localhost:9200/_mapping?pretty=true'
+根据规划，Elastic 6.x 版只允许每个 Index 包含一个 Type，7.x 版将会彻底移除 Type
+
+
+默认情况下，Elasticsearch根据结果相关性评分来对结果集进行排序，所谓的「结果相关性评分」就是文档与查询条件的匹配程度
+全文搜索 -- 一种传统数据库很难实现的功能。
+相关性(relevance)的概念在Elasticsearch中非常重要，而这个概念在传统关系型数据库中是不可想象的
+因为传统数据库对记录的查询只有匹配或者不匹配 relevance ['reləvəns] n. 相关性，关联性，实用性等
+
+分片可以是主分片(primary shard)或者是复制分片(replica shard)。你索引中的每个文档属于一个单独的主分片
+所以主分片的数量决定了索引最多能存储多少数据。复制分片只是主分片的一个副本，它可以防止硬件故障导致的数据丢失，同时可以提供读请求
+当索引创建完成的时候，主分片的数量就固定了，但是复制分片的数量可以随时调整
+在单一节点上运行意味着有单点故障的风险——没有数据备份，备份分片并未分配到其他的节点上，在同一个节点上保存相同的数据副本是没有必要的
+
+实际上，索引只是一个用来指向一个或多个分片(shards)的“逻辑命名空间(logical namespace)”
+一个分片(shard)是一个最小级别“工作单元(worker unit)”,它只是保存了索引中所有数据的一部分，分片就是一个Lucene实例
+并且它本身就是一个完整的搜索引擎。我们的文档存储在分片中，并且在分片中被索引，但是我们的应用程序不会直接与它们通信
+取而代之的是，直接与索引通信。在Elasticsearch中文档即是数据，可以理解为数据库表中的一条数据
+
+Elasticsearch -- 使用OCC(Optimistic Concurrency Control)，乐观并发控制，来保证数据的一致性
+Elasticsearch提供了原生的客户端，但是也有第三方的，比如Jest
+
+
+
 
 
 
