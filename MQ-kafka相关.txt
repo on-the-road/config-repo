@@ -294,6 +294,11 @@ $ curl 'localhost:9200/_mapping?pretty=true'
 Elasticsearch -- 使用OCC(Optimistic Concurrency Control)，乐观并发控制，来保证数据的一致性
 Elasticsearch提供了原生的客户端，但是也有第三方的，比如Jest
 
+Elasticsearch使用一种叫做倒排索引(inverted index)的结构来做快速的全文搜索。倒排索引由在文档中出现的唯一的单词列表
+以及对于每个单词在文档中的位置组成。
+
+
+
 
 
 
