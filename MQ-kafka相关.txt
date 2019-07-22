@@ -134,18 +134,25 @@ kafka 安装启动:
 
 
 
-			RabbitMq --- 相关东西
+RabbitMq --- 相关东西
 
-RabbitMQ是一个由erlang开发的AMQP（Advanced Message Queue Protocol）的开源实现，即一个消息队列，主要是用来实现应用程序的异步和解耦，同时也能起到消息缓冲，消息分发的作用
-一个Message有两个部分：payload（有效载荷）和label（标签）。payload顾名思义就是传输的数据。label是exchange的名字或者说是一个tag，它描述了payload，而且RabbitMQ也是通过这个label来决定把这个Message发给哪个Consumer。AMQP仅仅描述了label，而RabbitMQ决定了如何使用这个label的规则
+RabbitMQ是一个由erlang开发的AMQP（Advanced Message Queue Protocol）的开源实现，即一个消息队列
+主要是用来实现应用程序的异步和解耦，同时也能起到消息缓冲，消息分发的作用
+一个Message有两个部分：payload（有效载荷）和label（标签）。payload顾名思义就是传输的数据
+label是exchange的名字或者说是一个tag，它描述了payload，而且RabbitMQ也是通过这个label来决定把这个Message发给哪个Consumer
+AMQP仅仅描述了label，而RabbitMQ决定了如何使用这个label的规则
+
 对于一个数据从Producer到Consumer的正确传递，还有三个概念需要明确：exchanges, queues and bindings
  Exchanges are where producers publish their messages.
  Queues are where the messages end up and are received by consumers
  Bindings are how the messages get routed from the exchange to particular queues.
 
 virtual-host:理解
-虚拟主机：一个虚拟主机持有一组交换机、队列和绑定。为什么需要多个虚拟主机呢？很简单，RabbitMQ当中，用户只能在虚拟主机的粒度进行权限控制。 因此，如果需要禁止A组访问B组的交换机/队列/绑定，必须为A和B分别创建一个虚拟主机。每一个RabbitMQ服务器都有一个默认的虚拟主机“/”
-每个VirtualHost相当于一个相对独立的RabbitMQ服务器，每个VirtualHost之间是相互隔离的。exchange、queue、message不能互通，相当于mysql的db
+虚拟主机：一个虚拟主机持有一组交换机、队列和绑定。为什么需要多个虚拟主机呢？
+很简单，RabbitMQ当中，用户只能在虚拟主机的粒度进行权限控制。 因此，如果需要禁止A组访问B组的交换机/队列/绑定
+必须为A和B分别创建一个虚拟主机。每一个RabbitMQ服务器都有一个默认的虚拟主机“/”
+每个VirtualHost相当于一个相对独立的RabbitMQ服务器，每个VirtualHost之间是相互隔离的
+exchange、queue、message不能互通，相当于mysql的db
 
 1. @RabbitListener 作用：
    用在方法上：指定目标方法来作为消费消息的方法，通过注解参数指定所监听的队列或者Binding
@@ -168,43 +175,61 @@ virtual-host:理解
 		}
 
 总结
-如果消息属性中没有指定content_type，则接收消息的处理方法接收类型是byte[],如果消息属性中指定content_type为text，则接收消息的处理方法的参数类型是String类型。不管有没有指定content_type，处理消息方法的参数类型是Message都不会报错
+如果消息属性中没有指定content_type，则接收消息的处理方法接收类型是byte[],如果消息属性中指定content_type为text
+则接收消息的处理方法的参数类型是String类型。不管有没有指定content_type，处理消息方法的参数类型是Message都不会报错
 
 Message durability消息持久化
 	为了保证在RabbitMQ退出或者crash了数据仍没有丢失，需要将queue和Message都要持久化
 	再次强调，Producer和Consumer都应该去创建这个queue，尽管只有一个地方的创建是真正起作用的
 
-因为我们采用no-ack的方式进行确认，也就是说，每次Consumer接到数据后，而不管是否处理完成，RabbitMQ Server会立即把这个Message标记为完成，然后从queue中删除了。如果一个Consumer异常退出了，它处理的数据能够被另外的Consumer处理，这样数据在这种情况下就不会丢失了，注意是这种情况下
-为了保证数据不被丢失，RabbitMQ支持消息确认机制，即acknowledgments，如果Consumer退出了但是没有发送ack，那么RabbitMQ就会把这个Message发送到下一个Consumer。这样就保证了在Consumer异常退出的情况下数据也不会丢失
-这里并没有用到超时机制。RabbitMQ仅仅通过Consumer的连接中断来确认该Message并没有被正确处理也就是说，RabbitMQ给了Consumer足够长的时间来做数据处理
+因为我们采用no-ack的方式进行确认，也就是说，每次Consumer接到数据后，而不管是否处理完成
+RabbitMQ Server会立即把这个Message标记为完成，然后从queue中删除了。如果一个Consumer异常退出了
+它处理的数据能够被另外的Consumer处理，这样数据在这种情况下就不会丢失了，注意是这种情况下
+为了保证数据不被丢失，RabbitMQ支持消息确认机制，即acknowledgments，如果Consumer退出了但是没有发送ack
+那么RabbitMQ就会把这个Message发送到下一个Consumer。这样就保证了在Consumer异常退出的情况下数据也不会丢失
+这里并没有用到超时机制。RabbitMQ仅仅通过Consumer的连接中断来确认该Message并没有被正确处理也就是说
+RabbitMQ给了Consumer足够长的时间来做数据处理
 
 RabbitMQ的Messaging Model就是Producer并不会直接发送Message到queue。实际上，Producer并不知道它发送的Message是否已经到达queue
-Producer发送的Message实际上是发到了Exchange中。它的功能也很简单：从Producer接收Message，然后投递到queue中。Exchange需要知道如何处理Message，是把它放到那个queue中，还是放到多个queue中？这个rule是通过Exchange的类型定义的(direct,topic,fanout)
+Producer发送的Message实际上是发到了Exchange中。它的功能也很简单：从Producer接收Message，然后投递到queue中
+Exchange需要知道如何处理Message，是把它放到那个queue中，还是放到多个queue中？
+这个rule是通过Exchange的类型定义的(direct,topic,fanout,headers)
 
 Bingings(exchange与queue进行绑定)，也就是交换机需要和队列相绑定，两者之间是多对多的关系
-routing-key：这里的routing-key可以理解为queue的名字？
-一个exchange可以绑定多个queue，一个exchange与queue之间可以有多条bingings就是有多个binging-key也就是routing-key，多个queue绑定同一个key是可以的
-没有目标(binging-key)的消息会被丢弃
+一个exchange可以绑定多个queue，一个exchange与queue之间可以有多条bingings就是有多个binging-key也就是routing-key
+多个queue绑定同一个key是可以的，没有目标(binging-key)的消息会被丢弃
 
 Topic-Exchange:
-对于Message的routing_key是有限制的，不能是任意的。格式是以点号“."分割的字符表，比如："stock.usd.nyse", "nyse.vmw"，你可以放任意的key在routing_key中，当然最长不能超过255bytes
-对于routing_key，有两个特殊字符（在正则表达式里叫元字符）
-	.* (星号) 代表任意一个单词
-	.# (井号) 0个或者多个单词
+对于Message的routing_key是有限制的，不能是任意的。格式是以点号“."分割的字符表，比如："stock.usd.nyse", "nyse.vmw"
+你可以放任意的key在routing_key中，当然最长不能超过255 bytes，对于routing_key，有两个特殊字符（在正则表达式里叫元字符）
+* (星号) 代表任意一个单词
+# (井号) 0个或者多个单词
 如果binding_key 是 "#" - 它会接收所有的Message，不管routing_key是什么，就像是fanout exchange
-如果 "*" (star) and "#"(井号)有被使用，那么topic exchange就变成了direct exchange
+如果 "*" (star) and "#"(井号)没有被使用，那么topic exchange就变成了direct exchange
 
 Exchange用于转发消息，但是它不会做存储，如果没有Queue bind到Exchange的话，它会直接丢弃掉 Producer发送过来的消息
 交换机(Exchange)
-交换机的功能主要是接收消息并且转发到绑定的队列，交换机不存储消息，在启用ack模式后，交换机找不到队列会返回错误。交换机有四种类型：Direct, topic, Headers and Fanout
+交换机的功能主要是接收消息并且转发到绑定的队列，交换机不存储消息，在启用ack模式后，交换机找不到队列会返回错误
+交换机有四种类型：direct, topic, headers and fanout
 
-Direct：direct 类型的行为是"先匹配, 再投送". 即在绑定时设定一个routing_key,消息的routing_key 匹配时, 才会被交换器投送到绑定的队列中去，rabbitmq默认的交换机就是direct类型的
+Direct：direct 类型的行为是"先匹配, 再投送". 即在绑定时设定一个routing_key,消息的routing_key 匹配时
+才会被交换器投送到绑定的队列中去，rabbitmq默认的交换机就是direct类型的
 
 Topic：按规则转发消息（最灵活）
 
 Headers：设置header attribute参数类型的交换机
 
 Fanout：转发消息到所有绑定队列
+
+死信队列，延迟队列，DlX -- 死信交换器，DlX绑定死信队列
+优先级队列，队列优先级，消息优先级
+
+生产者确认机制，两种实现方式。1.事物机制、2.发送方确认(publisher confirm)
+
+交换器参数，mandatory
+当mandatory参数设为true时，交换器无法根据自身的类型和路由键找到一个符合条件的队列，那么RabbitMQ会调用Basic.Return
+命令将消息返回给生产者。当mandatory参数设置为false时，出现上述情形，则消息直接被丢弃
+
 
 
 Netty一些相关的东西：

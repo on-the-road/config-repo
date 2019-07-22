@@ -372,7 +372,7 @@ uname --
 
 linux-服务器查看内网和外网IP命令
 	etho inet   ifconfig
-	外网  curl ifconfig.me
+	外网  curl ifconfig.me  curl ipinfo.io/ip (后者速度很快)
 
 
 mysql -- 主从复制涉及到的相关命令

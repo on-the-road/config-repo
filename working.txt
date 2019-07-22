@@ -216,11 +216,6 @@ as.sh  helloworld.txt  logs  __MACOSX  OtherTestCase.class  pixel-ai-dev  testDo
 1-特写 2-近景 3-中景 4-远景 5-全景
 
 
-
-<div class="cool-animation-boundary" style="width:300px;" id="254"><div class="cool-sticky"><div class="cool-align"><div class="cool-top-line lineup" style="background-color: red;" id="254-2"></div><div class="cool-right-line lineup-down" style="background-color: red;" id="254-3"></div><div class="cool-text-animation"><div class="cool-text fadeIn" style="justify-content: flex-end;font-size: 36px;color: red;font-family:Arial;" id="254-4">边界</div><div class="cool-text-mark scale" style="background: #2bb1f9;" id="254-5"></div></div><div class="cool-bottom-line lineup-reverse" style="background-color: red;" id="254-6">
-</div><div class="cool-left-line lineup-up" style="background-color: red;" id="254-7"></div></div></div></div>
-
-
 newtt -- 1.前端需要传递   projectId  userId 尺寸信息
 
 
@@ -233,3 +228,5 @@ hystrix.command.default.execution.isolation.semaphore.maxConcurrentRequests=1000
 hystrix.command.default.fallback.isolation.semaphore.maxConcurrentRequests=1000
 
 C:\Program Files\Java\jdk-11.0.3\
+
+空格的ASCII码是32 ！！！

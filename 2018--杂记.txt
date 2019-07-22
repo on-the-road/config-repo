@@ -44,6 +44,7 @@
 	feign [fein] -- 伪装，虚构
 	ribbon [riben] -- 发'额'的音 ---色带，把..撕成条带  区别于 robin ---知更鸟，罗宾
 	fallback -- 回退物，或者可以理解为备胎...
+	backend -- 后端，后台
 	hystrix  [hist'riks]-- 高起，鳞癣
 	circuit ['se:kit] --额的音  电路，线路，环路
 	zuul [zu:l] --祖鲁
@@ -253,6 +254,8 @@
 	protocol [ˈprəʊ.tə.kɒl] n. 协议，公约
 	negotiation [nəˌɡəʊ.ʃiˈeɪʃən] vt. 协商，谈判  content negotiation 内容协商
 	scale [skel] n. 规模，比例  v. 测量，衡量
+	envelop [ɪnˈveləp] vt. 包住，包围，遮住
+	alternate [ɔ:lˈtɜ:nət] adj.轮流的，交替的，替代的
 
 
 HashMap中 -- 
