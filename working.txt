@@ -230,3 +230,353 @@ hystrix.command.default.fallback.isolation.semaphore.maxConcurrentRequests=1000
 C:\Program Files\Java\jdk-11.0.3\
 
 空格的ASCII码是32 ！！！
+
+
+2019-09-30 报工日志
+1.DevOps项目，修改新建、编辑流水线前端页面(构建任务的时候去掉warJarName，新建部署增加servicename)
+2.DevOps项目，修改新建、编辑流水线后台相关接口(构建任务的时候去掉warJarName，新建部署增加servicename
+
+
+2019-10-08 报工日志
+1.DevOps项目，构建任务、容器部署任务因之前新增service_name字段
+修改与容器部署相关的逻辑，调整后台相关联的接口
+2.容器部署逻辑新增方法，通过给定路径从jenkins获取项目打包名称，从而获得打包类型便于后面的容器镜像相关操作
+
+
+nexus 的一些调研 --
+
+http://192.168.106.95:57770/nexus/nexus-indexer-lucene-plugin/default/docs/rest.lucene.search.html
+
+http://192.168.106.95:57770/nexus/service/local/repositories
+
+https://blog.sonatype.com/2012/07/learning-the-nexus-rest-api-read-the-docs-or-fire-up-a-browser/
+
+Example: add a repository to nexus 增加一个repository到nexus
+
+POST   --   ${base}/service/local/repositories 
+
+
+{
+    "data": {
+        "repoType": "proxy",
+        "id": "somerepo",
+        "name": "Some Repo Name",
+        "browseable": true,
+        "indexable": true,
+        "notFoundCacheTTL": 1440,
+        "artifactMaxAge": -1,
+        "metadataMaxAge": 1440, 
+        "itemMaxAge": 1440,
+        "repoPolicy": "RELEASE",
+        "provider": "maven2",
+        "providerRole": "org.sonatype.nexus.proxy.repository.Repository",
+        "downloadRemoteIndexes": true,
+        "autoBlockActive": true,
+        "fileTypeValidation": true,
+        "exposed": true,
+        "checksumPolicy": "WARN",
+        "remoteStorage": {
+            "remoteStorageUrl": "http://someplace.com/repo",
+            "authentication": null,
+            "connectionSettings": null
+        }
+    }
+}
+
+"{
+	'data':{
+		'repoType': 'proxy',
+		'id': 'wangwei-test-repo',
+		'name': 'wangwei-test-repo',
+		'browseable': true,
+		'contentResourceURI':'http://192.168.106.95:57770/nexus/content/repositories/wangwei-test-repo',
+		'provider': 'maven2',
+		'providerRole': 'org.sonatype.nexus.proxy.repository.Repository',
+		'exposed': true
+	}
+}"
+
+
+
+nexus_2   
+创建仓库 - hosted 
+url -- http://192.168.172.114:8081/nexus/service/local/repositories   POST
+request:
+{"data":
+	{
+		"repoType":"hosted",
+		"id":"ww-test",
+		"name":"ww-test",
+		"writePolicy":"ALLOW_WRITE_ONCE",
+		"browseable":true,
+		"indexable":true,
+		"exposed":true,
+		"notFoundCacheTTL":1440,
+		"repoPolicy":"RELEASE",
+		"provider":"maven2",
+		"providerRole":"org.sonatype.nexus.proxy.repository.Repository",
+		"downloadRemoteIndexes":false,
+		"checksumPolicy":"IGNORE"
+	}
+}
+response:
+{
+	"data": {
+		"contentResourceURI": "http://192.168.172.114:8081/nexus/content/repositories/ww-test",
+		"id": "ww-test",
+		"name": "ww-test",
+		"provider": "maven2",
+		"providerRole": "org.sonatype.nexus.proxy.repository.Repository",
+		"format": "maven2",
+		"repoType": "hosted",
+		"exposed": true,
+		"writePolicy": "ALLOW_WRITE_ONCE",
+		"browseable": true,
+		"indexable": true,
+		"notFoundCacheTTL": 1440,
+		"repoPolicy": "RELEASE",
+		"downloadRemoteIndexes": false,
+		"defaultLocalStorageUrl": "file:/opt/common/sonatype-work/nexus/storage/ww-test"
+	}
+}
+
+response比request多三个字段 format，contentResourceURI，defaultLocalStorageUrl
+response中没有checksumPolicy字段
+
+创建仓库 - proxy
+url: http://192.168.172.114:8081/nexus/service/local/repositories  POST
+request:
+{
+	"data": {
+		"repoType": "proxy",
+		"id": "test-proxy",
+		"name": "test-proxy",
+		"browseable": true,
+		"indexable": true,
+		"notFoundCacheTTL": 1440,
+		"artifactMaxAge": -1,
+		"metadataMaxAge": 1440,
+		"itemMaxAge": 1440,
+		"repoPolicy": "RELEASE",
+		"provider": "maven2",
+		"providerRole": "org.sonatype.nexus.proxy.repository.Repository",
+		"downloadRemoteIndexes": false,
+		"autoBlockActive": true,
+		"fileTypeValidation": true,
+		"exposed": true,
+		"checksumPolicy": "WARN",
+		"remoteStorage": {
+			"remoteStorageUrl": "http://repo1.maven.org/maven2/",
+			"authentication": null,
+			"connectionSettings": null
+		}
+	}
+}
+response:
+{
+	"data": {
+		"contentResourceURI": "http://192.168.172.114:8081/nexus/content/repositories/test-proxy",
+		"id": "test-proxy",
+		"name": "test-proxy",
+		"provider": "maven2",
+		"providerRole": "org.sonatype.nexus.proxy.repository.Repository",
+		"format": "maven2",
+		"repoType": "proxy",
+		"exposed": true,
+		"writePolicy": "READ_ONLY",
+		"browseable": true,
+		"indexable": true,
+		"notFoundCacheTTL": 1440,
+		"repoPolicy": "RELEASE",
+		"checksumPolicy": "WARN",
+		"downloadRemoteIndexes": false,
+		"defaultLocalStorageUrl": "file:/opt/common/sonatype-work/nexus/storage/test-proxy",
+		"remoteStorage": {
+			"remoteStorageUrl": "http://repo1.maven.org/maven2/"
+		},
+		"fileTypeValidation": true,
+		"artifactMaxAge": -1,
+		"metadataMaxAge": 1440,
+		"itemMaxAge": 1440,
+		"autoBlockActive": true
+	}
+}
+
+添加 privileges_target
+http://192.168.172.114:8081/nexus/service/local/privileges_target   POST
+注意这里的请求数据 是 {"data":["This is a array!"]}
+
+request:
+{
+	"data": {
+		"name": "self-privilege",
+		"description": "control-self-repo",
+		"type": "target",
+		"repositoryTargetId": "1",
+		"repositoryId": "test-proxy",
+		"repositoryGroupId": "",
+		"method": ["create", "read", "update", "delete"]
+	}
+}
+response:
+{
+	"data": [{
+		"id": "9951d9c808e1",
+		"resourceURI": "http://192.168.172.114:8081/nexus/service/local/privileges_target/9951d9c808e1",
+		"name": "self-privilege - (create)",
+		"description": "control-self-repo",
+		"type": "target",
+		"userManaged": true,
+		"properties": [{
+			"key": "repositoryTargetId",
+			"value": "1"
+		}, {
+			"key": "method",
+			"value": "create,read"
+		}, {
+			"key": "repositoryId",
+			"value": "test-proxy"
+		}, {
+			"key": "repositoryGroupId",
+			"value": ""
+		}]
+	}, {
+		"id": "9951da0c51b5",
+		"resourceURI": "http://192.168.172.114:8081/nexus/service/local/privileges_target/9951da0c51b5",
+		"name": "self-privilege - (read)",
+		"description": "control-self-repo",
+		"type": "target",
+		"userManaged": true,
+		"properties": [{
+			"key": "repositoryTargetId",
+			"value": "1"
+		}, {
+			"key": "method",
+			"value": "read"
+		}, {
+			"key": "repositoryId",
+			"value": "test-proxy"
+		}, {
+			"key": "repositoryGroupId",
+			"value": ""
+		}]
+	}, {
+		"id": "9951da256161",
+		"resourceURI": "http://192.168.172.114:8081/nexus/service/local/privileges_target/9951da256161",
+		"name": "self-privilege - (update)",
+		"description": "control-self-repo",
+		"type": "target",
+		"userManaged": true,
+		"properties": [{
+			"key": "repositoryTargetId",
+			"value": "1"
+		}, {
+			"key": "method",
+			"value": "update,read"
+		}, {
+			"key": "repositoryId",
+			"value": "test-proxy"
+		}, {
+			"key": "repositoryGroupId",
+			"value": ""
+		}]
+	}, {
+		"id": "9951da4754e2",
+		"resourceURI": "http://192.168.172.114:8081/nexus/service/local/privileges_target/9951da4754e2",
+		"name": "self-privilege - (delete)",
+		"description": "control-self-repo",
+		"type": "target",
+		"userManaged": true,
+		"properties": [{
+			"key": "repositoryTargetId",
+			"value": "1"
+		}, {
+			"key": "method",
+			"value": "delete,read"
+		}, {
+			"key": "repositoryId",
+			"value": "test-proxy"
+		}, {
+			"key": "repositoryGroupId",
+			"value": ""
+		}]
+	}]
+}
+
+添加角色
+http://192.168.172.114:8081/nexus/service/local/roles  POST
+
+request:
+{
+	"data": {
+		"id": "self-role",
+		"name": "self-role",
+		"description": "control-self-privileges",
+		"sessionTimeout": 60,
+		"roles": ["ui-basic"],
+		"privileges": ["2", "9951d9c808e1", "9951da0c51b5", "9951da256161", "repository-test-proxy"]
+	}
+}
+
+response:
+{
+	"data": {
+		"resourceURI": "http://192.168.172.114:8081/nexus/service/local/roles/self-role",
+		"id": "self-role",
+		"name": "self-role",
+		"description": "control-self-privileges",
+		"sessionTimeout": 60,
+		"roles": ["ui-basic"],
+		"privileges": ["2", "9951d9c808e1", "9951da0c51b5", "9951da256161", "repository-test-proxy"],
+		"userManaged": true
+	}
+}
+
+创建用户:
+http://192.168.172.114:8081/nexus/service/local/users   POST
+
+request:
+{
+	"data": {
+		"userId": "test_create",
+		"firstName": "ww",
+		"lastName": "test",
+		"email": "wangwei8@ultrapower.com.cn",
+		"status": "active",
+		"password": "123456",
+		"roles": ["self-role"]
+	}
+}
+
+response:
+{
+	"data": {
+		"resourceURI": "http://192.168.172.114:8081/nexus/service/local/users/test_create",
+		"userId": "test_create",
+		"password": "123456",
+		"firstName": "ww",
+		"lastName": "test",
+		"status": "active",
+		"email": "wangwei8@ultrapower.com.cn",
+		"roles": ["self-role"]
+	}
+}
+
+---- 更改role信息
+url: http://192.168.172.114:8081/nexus/service/local/roles/self-role
+
+request:
+{
+	"data": {
+		"id": "self-role",
+		"name": "self-role",
+		"description": "control-self-privileges",
+		"sessionTimeout": 60,
+		"roles": ["ui-basic", "ui-repo-browser"],
+		"privileges": ["9951d9c808e1", "2", "9951da0c51b5", "repository-test-proxy", "9951da256161", "17"]
+	}
+}
+
+
+
+

@@ -369,6 +369,23 @@ uname --
 		cat /etc/issue
 	查看是32位还是64位:
 		file /bin/ls 
+	查看物理CPU个数、核数、逻辑CPU个数
+   （1）具有相同core id的CPU是同一个core的超线程。
+   （2）具有相同physical id的CPU是同一个CPU封装的线程或核心。
+   （3）总物理核数 = 物理CPU个数 X 每颗物理CPU的核数 
+   （4）总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数
+   （5）因此，对比总物理核数和总逻辑CPU数，如果不相等，则表示服务器CPU开启超线程
+
+	#查看CPU信息（型号）
+	awk -F':' '/model name/{print $2}' /proc/cpuinfo  | uniq
+	# 查看物理CPU个数
+	awk -F':' '/physical id/{print}' /proc/cpuinfo  | sort| uniq| wc -l
+	# 查看每个物理CPU中core的个数(即核数)
+	awk -F':' '/cpu cores/{print}' /proc/cpuinfo | uniq
+	# 查看逻辑CPU的个数
+	awk -F':' '/processor/{print}' /proc/cpuinfo | wc -l
+	
+
 
 linux-服务器查看内网和外网IP命令
 	etho inet   ifconfig
@@ -454,6 +471,7 @@ centos7上，卸载系统自带的openjdk,安装jdk1.8(现在是oracle公司)
 		jps / ss -tnlp
 		netstat -anp | grep port   ----> pid
 		ps aux | grep  pid
+	lsof -i:port -- 查看端口占用情况
 
 linux -- 2个命令:
 	df -h --检查文件系统的磁盘空间占用情况
@@ -686,7 +704,8 @@ telnet -- 命令
 	那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面
 
 ssh命令的妙用
-	Secure Shell缩写是SSH，由IETF的网络工作小组（Network Working Group）所制定，SSH是一项创建在应用层和传输层基础上的安全协议
+	Secure Shell缩写是SSH，由IETF的网络工作小组（Network Working Group）所制定
+	SSH是一项创建在应用层和传输层基础上的安全协议
 	为计算机的shell提供安全的传输和使用环境
 
 	1、command: ssh 192.168.0.116  -- 使用默认当前登录用户进行连接，第一次连接的时候，SSH 会确认目标主机的真实性
@@ -706,6 +725,18 @@ ssh命令的妙用
 		ssh pi@192.168.0.116 ls -l
 	7、另外一个很赞的基于SSH的工具叫sshfs，sshfs可以让你在本地直接挂载远程主机的文件系统。它的使用格式如下
 		sshfs -o idmap=user user@hostname:/home/user ~/Remote
+
+mount  -- 加载制定的文件系统，mount可将指定设备中指定的文件系统加载到Linux目录下（也就是装载点）
+	-o<选项> 指定加载文件系统时的选项，example: mount -o loop 这里的loop就是一个选项。
+	 主要用来描述设备或档案的挂接方式，常用的参数有:
+	 loop -- 用来把一个文件当成硬盘分区挂接上系统
+	 ro -- 采用只读方式挂载设备
+	 rw -- 采用读写方式挂载设备
+	 
+	 env | grep LANG  -- 查看系统的LANG环境变量，系统当前的编码字符集
+	 export LANG=zh_CN.utf8  -- 设置环境变量，export就是设置环境变量的命令
+
+
 
 	
 

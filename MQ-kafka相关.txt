@@ -31,16 +31,20 @@ Geo-Replication(异地数据同步技术)
 topic -- 主题，话题，论题的意思，一个topic是对一组消息的归纳，
 kafka只有topic的概念，一个topic可以有若干个分区，分区可以动态的修改，只能增加不能减少
 一个分区(partition)内的消息是有序的，各个分区之间的消息是无序的，消息以追加的方式写入
-这里有个概念，顺序写入磁盘的速度快于随机写入内存的顺序？
+这里有个概念，顺序写入磁盘的速度快于随机写入内存的速度？
 无论如何，kafka会持久化保存所有消息，无论它们是否已经被消费，用户可以配置相关的策略
 
 2. 将向topic发布消息的程序称之为producer，producer -- 生产者
-生产者往某个Topic上发布消息。生产者也负责选择发布到Topic上的哪一个分区。最简单的方式从分区列表中轮流选择。也可以根据某种算法依照权重选择分区。开发者负责如何选择分区的算法
+生产者往某个Topic上发布消息。生产者也负责选择发布到Topic上的哪一个分区。
+最简单的方式从分区列表中轮流选择。也可以根据某种算法依照权重选择分区。开发者负责如何选择分区的算法
 
 3. 将预定topic并消费消息的程序称之为consumer，consumer -- 消费者
-通常来讲，消息模型可以分为两种， 队列和发布-订阅式。 队列的处理方式是 一组消费者从服务器读取消息，一条消息只有其中的一个消费者来处理。在发布-订阅模型中，消息被广播给所有的消费者，接收到消息的消费者都可以处理此消息
+通常来讲，消息模型可以分为两种， 队列和发布-订阅式。 队列的处理方式是 一组消费者从服务器读取消息
+一条消息只有其中的一个消费者来处理。在发布-订阅模型中，消息被广播给所有的消费者
+接收到消息的消费者都可以处理此消息
 Kafka为这两种模型提供了单一的消费者抽象模型： 消费者组 (consumer group) 消费者用一个消费者组名标记自己
-一个发布在Topic上消息被分发给此消费者组中的一个消费者 假如所有的消费者都在一个组中，那么这就变成了queue模型 假如所有的消费者都在不同的组中，那么就完全变成了发布-订阅模型
+一个发布在Topic上消息被分发给此消费者组中的一个消费者 假如所有的消费者都在一个组中
+那么这就变成了queue模型 假如所有的消费者都在不同的组中，那么就完全变成了发布-订阅模型
 
 4. kafka以集群方式运行，可以有一个或多个服务，每个服务称为一个broker，broker ['brəukə] 经纪人，代理人，中间人
 5. 客户端与服务端通过tcp协议进行通讯
@@ -132,14 +136,124 @@ kafka 安装启动:
 	消费者可以订阅一个或多个主题（topic），并从Broker拉数据，从而消费这些已发布的消息
 	kafka可以修改删除topic,但是partition和repication不支持减少和修改
 
+相关面试题：
+	1. kafka的用途有哪些？使用场景如何？
+	消息系统 -- 消息顺序性保证及回溯消费的功能
+	存储系统 -- 消息持久化到磁盘，降低了数据丢失的风险。得益于消息持久功能和多副本机制
+			   把数据保留策略设为永久，或启用主题日志的压缩功能
+	流式处理平台 -- 为下游流式处理框架提供可靠的数据来源，还提供了一个完整的流式处理类库
+			   比如，窗口，连接，变换和聚合等操作
 
+	2. AR，ISR，ISR的伸缩又指什么？
+	ISR -- In-Sync-Replicas -- 与leader副本保持一定程度同步的副本(包括leader副本)
+	AR -- Assigned-Replicas -- 分区中的所有副本统称为AR
+	ISR的伸缩是指：kafka启动的时候会开启两个定时任务，isr-expiration，会周期性的检测每个分区是否
+				  要缩减其ISR集合，当检测到ISR种有失效副本，就缩减其ISR集合。如果某个分区的ISR集合
+				  发生变更，则把变更后的结果记录到zookeeper相应的节点中。
+
+				  ISR是由leader维护，follower从leader同步数据有一些延迟(时间和消息条数两个维度控制)
+				  任意一个超过阈值都会把follower剔除出ISR, 存入OSR（Outof-Sync Replicas）列表
+				  新加入的follower也会先存放在OSR中。AR=ISR+OSR
+
+	3. Kafka中的HW、LEO、LSO、LW等分别代表什么？
+	HW:High Watermark 高水位，取一个partition对应的ISR中最小的LEO作为HW
+	consumer最多只能消费到HW所在的位置上一条信息
+
+	LEO:LogEndOffset 当前日志文件中下一条待写信息的offset
+
+	HW/LEO这两个都是指最后一条的下一条的位置而不是指最后一条的位置
+
+	LSO:LastStableOffset 对未完成的事务而言，LSO的值等于事务中第一条消息的位置(firstUnstableOffset)
+	对已完成的事务而言，它的值同HW相同
+
+	LW:Low Watermark 低水位, 代表AR集合中最小的logStartOffset值。副本拉去请求和删除消息请求都有可能
+	促使LW的增长。拉去请求可能会出发新建日志分段而旧的被清理
+
+	4. Kafka中是怎么体现消息顺序性的？
+	kafka同一个partition中的消息在写入时都是有序追加的，消费时
+	每个partition只能被每一个group中的一个消费者消费，保证了消费时也是有序的
+	整个topic不保证有序。如果为了保证topic整个有序，那么将partition调整为1
+
+	5. Kafka中的分区器、序列化器、拦截器是否了解？它们之间的处理顺序是什么？
+	拦截器->序列化器->分区器
+	发送消息为指定分区的情况下：
+	key值不为null -- hash(key) -- 分区号 -- 所有分区中的任意一个
+	key值为null -- 轮询 -- 可用分区中的一个
+
+	6. Kafka生产者客户端的整体结构是什么样子的？
+	7. Kafka生产者客户端中使用了几个线程来处理？分别是什么？
+	2个，主线程和Sender线程。主线程负责创建消息，然后通过分区器、序列化器
+	拦截器作用之后缓存到累加器RecordAccumulator中。Sender线程负责将RecordAccumulator中消息发送到kafka中
+
+	10. “消费组中的消费者个数如果超过topic的分区，那么就会有消费者消费不到数据”这句话是否正确？
+	如果不正确，那么有没有什么hack的手段？
+	不正确，通过自定义分区分配策略，可以将一个consumer指定消费所有partition
+
+	11. 消费者提交消费位移时提交的是当前消费到的最新消息的offset还是offset+1?
+	offset+1
+
+	12. 有哪些情形会造成重复消费？
+	消费者消费后没有commit offset(程序崩溃/强行kill/消费耗时/自动提交偏移情况下unscrible)
+
+	13. 那些情景下会造成消息漏消费？
+	消费者没有处理完消息 提交offset(自动提交偏移 未处理情况下程序异常结束)
+	自动提交是在poll()方法的逻辑中，每次向服务端发起拉去请求之前检查是否可以进行位移提交，如果可以
+	就提交上一次轮询的位移(每隔5秒)
+
+	14. KafkaConsumer是非线程安全的，那么怎么样实现多线程消费？
+	一、在每个线程中新建一个KafkaConsumer
+
+	二、单线程创建KafkaConsumer，多个处理线程处理消息（难点在于是否要考虑消息顺序性，offset的提交方式）
+
+	15. 简述消费者与消费组之间的关系
+	消费者从属与消费组，消费偏移以消费组为单位。每个消费组可以独立消费主题的所有数据
+	同一消费组内消费者共同消费主题数据，每个分区只能被同一消费组内一个消费者消费
+
+	20. Kafka目前有那些内部topic，它们都有什么特征？各自的作用又是什么？
+	__consumer_offsets 以下划线开头，保存消费组的偏移
+
+	21. 优先副本是什么？它有什么特殊的作用？
+	优先副本会是默认的leader副本，发生leader变化时重选举会优先选择优先副本作为leader
+
+	22. Kafka有哪几处地方有分区分配的概念？简述大致的过程及原理
+	生产者分区分配、消费者分区分配、创建主题是分区副本的分配:
+	生产者分区分配是指为每条消息指定其发往的分区
+	消费者分区分配是指为消费者指定其可以消费的分区
+	分区副本分配是指创建主题时在哪个broker中创建哪些分区的副本
+	创建主题时
+	如果不手动指定分配方式(参数：replica-assignment) 有两种分配方式
+	指定机架信息和未指定机架信息
+
+	23. 简述Kafka的日志目录结构
+	每个partition一个文件夹，包含四类文件.index .log .timeindex leader-epoch-checkpoint
+	.index .log .timeindex 三个文件成对出现 前缀为上一个segment的最后一个消息的偏移 
+	log文件中保存了所有的消息 index文件中保存了稀疏的相对偏移的索引 timeindex保存的则是时间索引
+	leader-epoch-checkpoint中保存了每一任leader开始写入消息时的offset 会定时更新
+	follower被选为leader时会根据这个确定哪些消息可用
+
+	27. 聊一聊你对Kafka的Log Retention的理解
+	kafka留存策略包括 删除和压缩两种
+	删除: 根据时间和大小两个方式进行删除 大小是整个partition日志文件的大小
+	超过的会从老到新依次删除 时间指日志文件中的最大时间戳而非文件的最后修改时间
+	压缩: 相同key的value只保存一个 压缩过的是clean 未压缩的dirty 压缩之后的偏移量不连续 未压缩时连续
+
+	33. Kafka中的幂等是怎么实现的
+	pid+序号实现，单个producer内幂等
+
+	32. 消费再均衡的原理是什么？（提示：消费者协调器和消费组协调器）
+
+	37. 为什么Kafka不支持读写分离？
+	数据不一致，延时问题
+
+	38。 kafka中的事务 是指发送消息时的事务
 
 RabbitMq --- 相关东西
 
 RabbitMQ是一个由erlang开发的AMQP（Advanced Message Queue Protocol）的开源实现，即一个消息队列
 主要是用来实现应用程序的异步和解耦，同时也能起到消息缓冲，消息分发的作用
 一个Message有两个部分：payload（有效载荷）和label（标签）。payload顾名思义就是传输的数据
-label是exchange的名字或者说是一个tag，它描述了payload，而且RabbitMQ也是通过这个label来决定把这个Message发给哪个Consumer
+label是exchange的名字或者说是一个tag，它描述了payload
+而且RabbitMQ也是通过这个label来决定把这个Message发给哪个Consumer
 AMQP仅仅描述了label，而RabbitMQ决定了如何使用这个label的规则
 
 对于一个数据从Producer到Consumer的正确传递，还有三个概念需要明确：exchanges, queues and bindings
@@ -190,8 +304,10 @@ RabbitMQ Server会立即把这个Message标记为完成，然后从queue中删�
 这里并没有用到超时机制。RabbitMQ仅仅通过Consumer的连接中断来确认该Message并没有被正确处理也就是说
 RabbitMQ给了Consumer足够长的时间来做数据处理
 
-RabbitMQ的Messaging Model就是Producer并不会直接发送Message到queue。实际上，Producer并不知道它发送的Message是否已经到达queue
-Producer发送的Message实际上是发到了Exchange中。它的功能也很简单：从Producer接收Message，然后投递到queue中
+RabbitMQ的Messaging Model就是Producer并不会直接发送Message到queue
+实际上，Producer并不知道它发送的Message是否已经到达queue
+Producer发送的Message实际上是发到了Exchange中。它的功能也很简单：从Producer接收Message
+然后投递到queue中
 Exchange需要知道如何处理Message，是把它放到那个queue中，还是放到多个queue中？
 这个rule是通过Exchange的类型定义的(direct,topic,fanout,headers)
 
@@ -201,15 +317,18 @@ Bingings(exchange与queue进行绑定)，也就是交换机需要和队列相绑
 
 Topic-Exchange:
 对于Message的routing_key是有限制的，不能是任意的。格式是以点号“."分割的字符表，比如："stock.usd.nyse", "nyse.vmw"
-你可以放任意的key在routing_key中，当然最长不能超过255 bytes，对于routing_key，有两个特殊字符（在正则表达式里叫元字符）
+你可以放任意的key在routing_key中，当然最长不能超过255 bytes，对于routing_key
+有两个特殊字符（在正则表达式里叫元字符）
 * (星号) 代表任意一个单词
 # (井号) 0个或者多个单词
 如果binding_key 是 "#" - 它会接收所有的Message，不管routing_key是什么，就像是fanout exchange
 如果 "*" (star) and "#"(井号)没有被使用，那么topic exchange就变成了direct exchange
 
-Exchange用于转发消息，但是它不会做存储，如果没有Queue bind到Exchange的话，它会直接丢弃掉 Producer发送过来的消息
+Exchange用于转发消息，但是它不会做存储，如果没有Queue bind到Exchange的话
+它会直接丢弃掉 Producer发送过来的消息
 交换机(Exchange)
-交换机的功能主要是接收消息并且转发到绑定的队列，交换机不存储消息，在启用ack模式后，交换机找不到队列会返回错误
+交换机的功能主要是接收消息并且转发到绑定的队列，交换机不存储消息，在启用ack模式后
+交换机找不到队列会返回错误
 交换机有四种类型：direct, topic, headers and fanout
 
 Direct：direct 类型的行为是"先匹配, 再投送". 即在绑定时设定一个routing_key,消息的routing_key 匹配时
@@ -227,7 +346,8 @@ Fanout：转发消息到所有绑定队列
 生产者确认机制，两种实现方式。1.事物机制、2.发送方确认(publisher confirm)
 
 交换器参数，mandatory
-当mandatory参数设为true时，交换器无法根据自身的类型和路由键找到一个符合条件的队列，那么RabbitMQ会调用Basic.Return
+当mandatory参数设为true时，交换器无法根据自身的类型和路由键找到一个符合条件的队列
+那么RabbitMQ会调用Basic.Return
 命令将消息返回给生产者。当mandatory参数设置为false时，出现上述情形，则消息直接被丢弃
 
 
@@ -244,19 +364,22 @@ Netty一些相关的东西：
 	3. ChannelHandlerContext，用于传输业务数据
 	4. ChannelPipeLine，用于保存处理过程需要用到的ChannelHandler和ChannelHandlerContext
 
-	ByteBuf: 是一个存储字节的容器，最大的好处就是使用方便，它既有自己的读索引和写索引，方便你对整段字节缓存进行读写，也支持get/set，方便你对其中每一个字节进行读写
+	ByteBuf: 是一个存储字节的容器，最大的好处就是使用方便，它既有自己的读索引和写索引
+	方便你对整段字节缓存进行读写，也支持get/set，方便你对其中每一个字节进行读写
 
 	Codec
-	Netty中的编码，解码器，通过他你能完成字节与pojo、pojo与pojo的相互转换，从而达到自定义协议的目的。在Netty里面最有名的就是HttpRequestDecoder和HttpResponseEncoder了
+	Netty中的编码，解码器，通过他你能完成字节与pojo、pojo与pojo的相互转换，从而达到自定义协议的目的
+	在Netty里面最有名的就是HttpRequestDecoder和HttpResponseEncoder了
 
 
 
 
 mmap -- 相关概念
-mmap是一种内存映射文件的方法，即将一个文件或者其它对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间
-中一段虚拟地址的一一对映关系。实现这样的映射关系后，进程就可以采用指针的方式读写操作这一段内存，而系统会自动回写
-脏页面到对应的文件磁盘上，即完成了对文件的操作而不必再调用read,write等系统调用函数。相反，内核空间对这段区域的修
-改也直接反映用户空间，从而可以实现不同进程间的文件共享
+mmap是一种内存映射文件的方法，即将一个文件或者其它对象映射到进程的地址空间
+实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对映关系。实现这样的映射关系后
+进程就可以采用指针的方式读写操作这一段内存，而系统会自动回写
+脏页面到对应的文件磁盘上，即完成了对文件的操作而不必再调用read,write等系统调用函数
+相反，内核空间对这段区域的修改也直接反映到用户空间，从而可以实现不同进程间的文件共享
 
 一脸懵懂....
 
@@ -289,7 +412,8 @@ Index里面单条的记录称为Document、文档。许多条Document构成了�
   "user": "张三","title": "工程师","desc": "数据库管理"
 }
 同一个Index里面的Document，不要求有相同的结构（scheme），但是最好保持相同，这样有利于提高搜索效率
-Document相当于关系型数据库中的一行，默认情况下，文档中的所有字段都会被索引（拥有一个倒排索引），只有这样他们才是可被搜索的
+Document相当于关系型数据库中的一行，默认情况下，文档中的所有字段都会被索引（拥有一个倒排索引）
+只有这样他们才是可被搜索的
 文档中的字段相当于关系型数据库中的列
 
 Type、分组 -- 可以理解为关系型数据库中的表（table）
@@ -301,7 +425,8 @@ $ curl 'localhost:9200/_mapping?pretty=true'
 根据规划，Elastic 6.x 版只允许每个 Index 包含一个 Type，7.x 版将会彻底移除 Type
 
 
-默认情况下，Elasticsearch根据结果相关性评分来对结果集进行排序，所谓的「结果相关性评分」就是文档与查询条件的匹配程度
+默认情况下，Elasticsearch根据结果相关性评分来对结果集进行排序
+所谓的「结果相关性评分」就是文档与查询条件的匹配程度
 全文搜索 -- 一种传统数据库很难实现的功能。
 相关性(relevance)的概念在Elasticsearch中非常重要，而这个概念在传统关系型数据库中是不可想象的
 因为传统数据库对记录的查询只有匹配或者不匹配 relevance ['reləvəns] n. 相关性，关联性，实用性等
@@ -309,18 +434,21 @@ $ curl 'localhost:9200/_mapping?pretty=true'
 分片可以是主分片(primary shard)或者是复制分片(replica shard)。你索引中的每个文档属于一个单独的主分片
 所以主分片的数量决定了索引最多能存储多少数据。复制分片只是主分片的一个副本，它可以防止硬件故障导致的数据丢失，同时可以提供读请求
 当索引创建完成的时候，主分片的数量就固定了，但是复制分片的数量可以随时调整
-在单一节点上运行意味着有单点故障的风险——没有数据备份，备份分片并未分配到其他的节点上，在同一个节点上保存相同的数据副本是没有必要的
+在单一节点上运行意味着有单点故障的风险——没有数据备份，备份分片并未分配到其他的节点上
+在同一个节点上保存相同的数据副本是没有必要的
 
 实际上，索引只是一个用来指向一个或多个分片(shards)的“逻辑命名空间(logical namespace)”
-一个分片(shard)是一个最小级别“工作单元(worker unit)”,它只是保存了索引中所有数据的一部分，分片就是一个Lucene实例
-并且它本身就是一个完整的搜索引擎。我们的文档存储在分片中，并且在分片中被索引，但是我们的应用程序不会直接与它们通信
+一个分片(shard)是一个最小级别“工作单元(worker unit)”,它只是保存了索引中所有数据的一部分
+分片就是一个Lucene实例
+并且它本身就是一个完整的搜索引擎。我们的文档存储在分片中，并且在分片中被索引
+但是我们的应用程序不会直接与它们通信
 取而代之的是，直接与索引通信。在Elasticsearch中文档即是数据，可以理解为数据库表中的一条数据
 
 Elasticsearch -- 使用OCC(Optimistic Concurrency Control)，乐观并发控制，来保证数据的一致性
 Elasticsearch提供了原生的客户端，但是也有第三方的，比如Jest
 
-Elasticsearch使用一种叫做倒排索引(inverted index)的结构来做快速的全文搜索。倒排索引由在文档中出现的唯一的单词列表
-以及对于每个单词在文档中的位置组成。
+Elasticsearch使用一种叫做倒排索引(inverted index)的结构来做快速的全文搜索
+倒排索引由在文档中出现的唯一的单词列表以及对于每个单词在文档中的位置组成。
 由属性值来确定记录的位置的结构就是倒排索引。带有倒排索引的文件我们称为倒排文件
 
 词典和倒排表是Lucene中很重要的两种数据结构，是实现快速检索的重要基石。词典和倒排文件是分两部分存储的

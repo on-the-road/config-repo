@@ -138,7 +138,7 @@
 	patch [pætʃ] 补丁，小块，眼罩
 	mesh [mɛʃ] 齿轮的啮(nie-四声)合，网状物
 	sidecar -- 边车，尤指带跨斗的摩托车的跨斗
-	guava [ɡwɑvə] 番石榴
+	guava [ˈɡwɑːvə] 番石榴
 	eviction [ɪ'vɪkʃn] n. 驱逐，赶出，(房屋等.)收回
 	capture [ˈkæptʃɚ] vt. 俘获，夺得，夺取
 	annual [ˈænjuəl] adj. 一年的，每年的
