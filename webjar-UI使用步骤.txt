@@ -1,0 +1,61 @@
+webjars 使用步骤
+
+    1.安装jdk1.8，配置环境变量
+        新增环境变量 JAVA_HOME:  jdk安装路径
+        新建环境变量 CALSSPATH:  .;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;
+        在已有的环境变量 Path:   ;%JAVA_HOME%\bin  
+        验证命令  -- java -version
+
+    2.安装maven，配置settings.xml文件以及配置maven-repo
+        下载解压包，解压即可
+        添加环境变量  MAVEN_HOME  -- maven安装路径
+        在已有的环境变量 Path:   ;%MAVEN_HOME%\bin  
+        验证命令 -- mvn -v
+        配置文件，路径  D:\apache-maven-3.5.0\conf\setting.xml
+        修改本地仓库路径 example:    <localRepository>D:/maven-repo</localRepository>
+        增加nexus仓库验证信息 -- <servers>标签中增加如下内容：
+         </server>-->
+            <server>
+            <id>unicomdm-3rd</id>
+            <username>chenchen</username>
+            <password>123456</password>
+            </server>
+            
+            <server>
+            <id>ultra-unionmon_inner</id>
+            <username>chenchen</username>
+            <password>123456</password>
+            </server>
+        </servers>   
+
+    3.新建一个springboot项目，事先最好已有...
+
+    4.配置pom.xml文件，主要是增加nexus仓库地址以及部署打包一些重要配置
+    有样例，重点是版本相关信息.....不多说
+    上传仓库配置
+    <distributionManagement>
+		<repository>
+			<id>ultra-ci</id>
+			<name>ultra-ci</name>
+			<url>http://192.168.106.95:57770/nexus/content/repositories/ultra-ci/</url>
+		</repository>
+	</distributionManagement>
+
+    5.运行mvn compile或者mvn package，Maven会自动下载相关依赖
+    maven项目的完整生命周期，当执行生命周期后面命令时，前面步骤的命令自动执行
+    执行mvn命令，上传jar包到nexus仓库
+    windows + cmd 一些命令  d:      cd \    cd..等
+    mvn idea:clean  -- 清除idea配置
+    mvn compile  -- 编译命令
+    mvn package  -- 打包命令
+    mvn clean  -- 清除命令
+    mvn deploy  -- 清除、编译、打包、上传到nexus仓库等一系列步骤
+
+    基本就这些，需要准备的东西：
+    jdk1.8 安装包，maven3.++安装包，一个建好的项目
+    必要的时候提供settings.xml文件与基础jar
+
+
+
+
+

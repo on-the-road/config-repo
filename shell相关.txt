@@ -9,7 +9,10 @@
 
 解压文件：
 	rpm -ivh file.rpm -- 安装rpm包
-	tar -zxvf file.tar.gz
+		-i:--install 安装制定的套建档
+		-v:显示安装过程
+		-h:套件安装时列出标记
+	tar -zxvf file.tar.gz -C /home
 		-z:使用gzip进行压缩/解压
 		-v:显示详细信息 verbose
 		-x:对打包的文件进行解压操作

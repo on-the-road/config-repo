@@ -580,3 +580,17 @@ request:
 
 
 
+<a act="logInfo" 
+href="http://192.168.181.89:9999/ci/hb/jsp/pipeManage/pipe_log.jsp?pipId=fd4298fa9ccb45e4a75d0bd54bc7af3c" target="_blank">
+执行日志</a>
+
+
+http://localhost/jenkins/job/<jobName>/lastBuild/api/xml
+
+
+改动 -- pipe_manage.jsp pipe_manage.js
+
+<act='logInfo'/> pip_id = pipId 修改为 taskName = task_name
+323、436、634、721、960
+
+改动 pipe_log.js
